@@ -4,6 +4,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,7 +35,9 @@ export default function RootLayout({
         <SmoothScroll>
 
           <Header />
-          <main>{children}</main>
+          <main>{children}
+            <ScrollToTop />
+          </main>
           <Footer />
         </SmoothScroll>
       </body>

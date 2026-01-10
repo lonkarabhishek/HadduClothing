@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
-import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 /* ================= TYPES ================= */
 
@@ -71,77 +71,111 @@ const products: Product[] = [
 
 /* ================= CONFIG ================= */
 
-const ITEMS_PER_SLIDE = 4;
-const SLIDE_INTERVAL = 3000;
-const LAST_SLIDE_DELAY = 5000;
+const DESKTOP_ITEMS = 4;
+const TABLET_ITEMS = 2;
+const MOBILE_ITEMS = 1;
+
+const SLIDE_INTERVAL = 3500;
+const LAST_SLIDE_DELAY = 5200;
+const SWIPE_THRESHOLD = 80;
 
 /* ================= COMPONENT ================= */
 
 export default function NewArrivals() {
-    const controls = useAnimationControls();
+    const containerRef = useRef<HTMLDivElement>(null);
     const [page, setPage] = useState(0);
     const [paused, setPaused] = useState(false);
+    const [itemsPerSlide, setItemsPerSlide] = useState(DESKTOP_ITEMS);
+    const [slideWidth, setSlideWidth] = useState(0);
 
-    const totalPages = Math.ceil(products.length / ITEMS_PER_SLIDE);
+    /* ---------- RESPONSIVE SETUP ---------- */
+    useEffect(() => {
+        const updateLayout = () => {
+            if (!containerRef.current) return;
+
+            setSlideWidth(containerRef.current.offsetWidth);
+
+            if (window.innerWidth < 640) setItemsPerSlide(MOBILE_ITEMS);
+            else if (window.innerWidth < 1024) setItemsPerSlide(TABLET_ITEMS);
+            else setItemsPerSlide(DESKTOP_ITEMS);
+        };
+
+        updateLayout();
+        window.addEventListener("resize", updateLayout);
+        return () => window.removeEventListener("resize", updateLayout);
+    }, []);
+
+    const totalPages = Math.ceil(products.length / itemsPerSlide);
     const isLastSlide = page === totalPages - 1;
 
+    /* ---------- AUTO SLIDE ---------- */
     useEffect(() => {
         if (paused) return;
 
-        let timer: NodeJS.Timeout;
-
-        if (isLastSlide) {
-            timer = setTimeout(() => {
-                setPage(0);
-            }, LAST_SLIDE_DELAY);
-        } else {
-            timer = setTimeout(() => {
-                setPage((p) => p + 1);
-            }, SLIDE_INTERVAL);
-        }
+        const timer = setTimeout(() => {
+            setPage(isLastSlide ? 0 : page + 1);
+        }, isLastSlide ? LAST_SLIDE_DELAY : SLIDE_INTERVAL);
 
         return () => clearTimeout(timer);
     }, [page, paused, isLastSlide]);
 
-    useEffect(() => {
-        controls.start({
-            x: `-${page * 100}%`,
-            transition: {
-                duration: 0.9,
-                ease: [0.4, 0, 0.2, 1],
-            },
-        });
-    }, [page, controls]);
+    /* ---------- DRAG HANDLER ---------- */
+    const handleDragEnd = (_: any, info: any) => {
+        setPaused(false);
+
+        if (info.offset.x < -SWIPE_THRESHOLD && page < totalPages - 1) {
+            setPage((p) => p + 1);
+        }
+
+        if (info.offset.x > SWIPE_THRESHOLD && page > 0) {
+            setPage((p) => p - 1);
+        }
+    };
 
     return (
-        <section className="py-12 px-4 md:px-8 max-w-[1600px] mx-auto overflow-hidden">
+        <section className="py-16 md:py-20 px-5 md:px-8 max-w-[1600px] mx-auto overflow-hidden">
             {/* HEADER */}
-            <div className="mb-14 text-center max-w-xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-light tracking-[0.25em] uppercase">
+            <div className="mb-12 md:mb-16 text-center max-w-xl mx-auto">
+                <h2 className="text-3xl md:text-5xl font-light tracking-[0.25em] uppercase">
                     New Arrivals
                 </h2>
-                <p className="mt-5 text-sm text-gray-500 tracking-wide">
+                <p className="mt-4 text-xs md:text-sm text-gray-500 tracking-wide">
                     Fresh styles, just dropped.
                 </p>
             </div>
 
             {/* SLIDER */}
             <div
+                ref={containerRef}
                 className="overflow-hidden"
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}
             >
-                <motion.div animate={controls} className="flex w-full">
+                <motion.div
+                    drag="x"
+                    dragElastic={0.15}
+                    dragMomentum={false}
+                    onDragStart={() => setPaused(true)}
+                    onDragEnd={handleDragEnd}
+                    animate={{ x: -page * slideWidth }}
+                    transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                    className="flex cursor-grab active:cursor-grabbing"
+                >
                     {Array.from({ length: totalPages }).map((_, pageIndex) => (
                         <div
                             key={pageIndex}
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 min-w-full"
+                            className={`grid gap-8 md:gap-10 min-w-full ${itemsPerSlide === 1
+                                ? "grid-cols-1"
+                                : itemsPerSlide === 2
+                                    ? "grid-cols-2"
+                                    : "grid-cols-4"
+                                }`}
                         >
                             {products
                                 .slice(
-                                    pageIndex * ITEMS_PER_SLIDE,
-                                    pageIndex * ITEMS_PER_SLIDE +
-                                    ITEMS_PER_SLIDE
+                                    pageIndex * itemsPerSlide,
+                                    pageIndex * itemsPerSlide +
+                                    itemsPerSlide
                                 )
                                 .map((product) => (
                                     <ProductCard
@@ -154,12 +188,12 @@ export default function NewArrivals() {
                 </motion.div>
             </div>
 
-            {/* VIEW MORE (BOTTOM – ONLY LAST SLIDE) */}
+            {/* VIEW MORE */}
             {isLastSlide && (
-                <div className="mt-20 text-center">
+                <div className="mt-16 md:mt-20 text-center">
                     <Link
                         href="/collections/new-arrivals"
-                        className="inline-flex items-center gap-3 border border-black px-12 py-4 text-xs uppercase tracking-[0.35em] transition hover:bg-[#084205] hover:text-white"
+                        className="inline-flex items-center border border-black px-10 md:px-12 py-3 md:py-4 text-[10px] md:text-xs uppercase tracking-[0.35em] transition hover:bg-[#084205] hover:text-white"
                     >
                         View More
                     </Link>
@@ -182,55 +216,35 @@ function ProductCard({ product }: { product: Product }) {
 
     return (
         <div className="group relative">
+            {/* IMAGE */}
             <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
                 <Link href={product.href}>
-                    <motion.div
-                        animate={
-                            added
-                                ? {
-                                    scale: 0.55,
-                                    y: 40,
-                                    opacity: 0,
-                                    filter: "blur(4px)",
-                                }
-                                : {}
-                        }
-                        transition={{
-                            duration: 0.7,
-                            ease: [0.4, 0, 0.2, 1],
-                        }}
-                        className="absolute inset-0"
-                    >
-                        <Image
-                            src={product.image}
-                            alt={product.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                    </motion.div>
+                    <Image
+                        src={product.image}
+                        alt={product.title}
+                        fill
+                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 25vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                 </Link>
 
                 {/* WISHLIST */}
-                <button className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <button className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
                     <Heart size={18} />
                 </button>
 
                 {/* ADD TO CART */}
                 <motion.button
                     onClick={handleAddToCart}
-                    animate={{ width: added ? 56 : 180 }}
-                    transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 h-12 bg-black text-white overflow-hidden flex items-center justify-center uppercase tracking-widest text-xs"
+                    animate={{ width: added ? 52 : 160 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 h-11 bg-black text-white uppercase tracking-widest text-[10px] flex items-center justify-center overflow-hidden hover:bg-[#0A3E08] transition"
                 >
                     <AnimatePresence mode="wait">
                         {!added ? (
                             <motion.span
                                 key="text"
-                                exit={{
-                                    opacity: 0,
-                                    y: -10,
-                                    filter: "blur(6px)",
-                                }}
+                                exit={{ opacity: 0, y: -6 }}
                                 transition={{ duration: 0.3 }}
                                 className="flex items-center gap-2"
                             >
@@ -247,7 +261,7 @@ function ProductCard({ product }: { product: Product }) {
                                 }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <ShoppingBag size={18} />
+                                <ShoppingBag size={16} />
                             </motion.span>
                         )}
                     </AnimatePresence>
@@ -255,16 +269,16 @@ function ProductCard({ product }: { product: Product }) {
             </div>
 
             {/* INFO */}
-            <div className="mt-5 space-y-2">
-                <span className="inline-block border border-black px-2 py-0.5 text-[11px] uppercase tracking-widest">
+            <div className="mt-4 space-y-2">
+                <span className="inline-block border border-black px-2 py-0.5 text-[10px] uppercase tracking-widest">
                     {product.tag}
                 </span>
 
-                <h3 className="text-sm leading-relaxed font-medium">
+                <h3 className="text-sm leading-relaxed font-medium line-clamp-2">
                     {product.title}
                 </h3>
 
-                <div className="flex flex-wrap gap-2 text-xs text-gray-600">
+                <div className="flex flex-wrap gap-1.5 text-[10px] text-gray-600">
                     {product.sizes.map((size) => (
                         <span
                             key={size}
@@ -275,14 +289,14 @@ function ProductCard({ product }: { product: Product }) {
                     ))}
                 </div>
 
-                <div className="flex items-center gap-3 text-sm">
+                <div className="flex items-center gap-2 text-sm">
                     <span className="font-semibold">
                         ₹ {product.price.toLocaleString()}
                     </span>
-                    <span className="text-gray-400 line-through">
+                    <span className="text-gray-400 line-through text-xs">
                         ₹ {product.originalPrice.toLocaleString()}
                     </span>
-                    <span className="bg-[#0C4008] text-white text-xs px-2 py-0.5">
+                    <span className="bg-[#0C4008] text-white text-[10px] px-2 py-0.5">
                         {product.discount}
                     </span>
                 </div>
