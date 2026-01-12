@@ -80,7 +80,6 @@ function useTypewriter(
     return text;
 }
 
-
 export default function Header() {
     const [open, setOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
@@ -99,12 +98,9 @@ export default function Header() {
         1800
     );
 
-
     /* Auto focus when search opens */
     useEffect(() => {
-        if (searchOpen) {
-            inputRef.current?.focus();
-        }
+        if (searchOpen) inputRef.current?.focus();
     }, [searchOpen]);
 
     /* ESC to close search */
@@ -188,58 +184,138 @@ export default function Header() {
                                         <Search size={20} strokeWidth={1.2} />
                                     </motion.button>
                                 ) : (
-                                    <motion.div
-                                        key="input"
-                                        initial={{ width: 0, opacity: 0 }}
-                                        animate={{ width: 240, opacity: 1 }}
-                                        exit={{ width: 0, opacity: 0 }}
-                                        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                                        className="h-9 flex items-center border border-neutral-300 rounded-full px-4 bg-white"
-                                    >
-                                        <Search size={16} className="text-neutral-400 mr-2" />
-                                        <input
-                                            ref={inputRef}
-                                            type="text"
-                                            placeholder={`Search for ${animatedText}`}
-                                            className="w-full text-sm outline-none placeholder:text-neutral-400 caret-[#0C4008]"
-                                        />
-                                        <button
-                                            onClick={() => setSearchOpen(false)}
-                                            aria-label="Close search"
-                                            className="ml-2 text-neutral-400 hover:text-[#0C4008]"
+                                    <>
+                                        {/* DESKTOP SEARCH */}
+                                        <motion.div
+                                            key="desktop-input"
+                                            initial={{ width: 0, opacity: 0 }}
+                                            animate={{ width: 240, opacity: 1 }}
+                                            exit={{ width: 0, opacity: 0 }}
+                                            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                                            className="hidden md:flex h-9 items-center border border-neutral-300 rounded-full px-4 bg-white"
                                         >
-                                            <X size={14} />
-                                        </button>
-                                    </motion.div>
+                                            <Search size={16} className="text-neutral-400 mr-2" />
+                                            <input
+                                                ref={inputRef}
+                                                type="text"
+                                                placeholder={`Search for ${animatedText}`}
+                                                className="w-full text-sm outline-none placeholder:text-neutral-400 caret-[#0C4008]"
+                                            />
+                                            <button
+                                                onClick={() => setSearchOpen(false)}
+                                                aria-label="Close search"
+                                                className="ml-2 text-neutral-400 hover:text-[#0C4008]"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </motion.div>
+
+                                        {/* MOBILE SEARCH */}
+                                        <motion.div
+                                            key="mobile-input"
+                                            initial={{ y: -20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            exit={{ y: -20, opacity: 0 }}
+                                            transition={{ duration: 0.35, ease: "easeOut" }}
+                                            className="md:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b border-neutral-200 flex items-center px-4"
+                                        >
+                                            <Search size={18} className="text-neutral-400 mr-3" />
+                                            <input
+                                                ref={inputRef}
+                                                type="text"
+                                                placeholder={`Search for ${animatedText}`}
+                                                className="flex-1 text-sm outline-none placeholder:text-neutral-400 caret-[#0C4008]"
+                                            />
+                                            <button
+                                                onClick={() => setSearchOpen(false)}
+                                                aria-label="Close search"
+                                                className="ml-3 text-neutral-500 hover:text-[#0C4008]"
+                                            >
+                                                <X size={20} />
+                                            </button>
+                                        </motion.div>
+                                    </>
                                 )}
                             </AnimatePresence>
                         </div>
 
                         {/* Wishlist */}
-                        <Link
-                            href="/wishlist"
-                            className="hidden md:flex h-9 w-9 items-center justify-center text-neutral-700 hover:text-[#0C4008] transition"
-                        >
+                        <Link href="/wishlist" className="hidden md:flex h-9 w-9 items-center justify-center text-neutral-700 hover:text-[#0C4008] transition">
                             <Heart size={20} strokeWidth={1.2} />
                         </Link>
 
                         {/* Cart */}
-                        <Link
-                            href="/cart"
-                            className="flex h-9 w-9 items-center justify-center text-neutral-700 hover:text-[#0C4008] transition"
-                        >
+                        <Link href="/cart" className="flex h-9 w-9 items-center justify-center text-neutral-700 hover:text-[#0C4008] transition">
                             <ShoppingBag size={20} strokeWidth={1.2} />
                         </Link>
 
                         {/* User */}
-                        <Link
-                            href="/account"
-                            className="hidden md:flex h-9 w-9 items-center justify-center text-neutral-700 hover:text-[#0C4008] transition"
-                        >
+                        <Link href="/account" className="hidden md:flex h-9 w-9 items-center justify-center text-neutral-700 hover:text-[#0C4008] transition">
                             <User size={20} strokeWidth={1.2} />
                         </Link>
                     </div>
                 </div>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            <div
+                className={`fixed inset-0 z-50 bg-white transition-all duration-300 ease-in-out
+    ${open ? "opacity-100 visible" : "opacity-0 invisible"}`}
+            >
+                {/* Top Bar */}
+                <div className="flex h-16 items-center justify-between px-4 border-b">
+                    <span className="font-semibold uppercase text-black">Menu</span>
+                    <button onClick={() => setOpen(false)} aria-label="Close menu">
+                        <X size={24} className="text-black" />
+                    </button>
+                </div>
+
+                {/* Menu Content */}
+                <nav
+                    className={`flex flex-col gap-6 px-6 py-10 text-lg transform transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "-translate-x-full"}`}
+                >
+                    {NAV_LINKS.map((link) => (
+                        <Link
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => setOpen(false)}
+                            className="text-neutral-900"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                    <div className="grid grid-cols-4">
+
+                        {/* <Link
+                            href="/cart"
+                            className="relative text-neutral-900 hover:text-neutral-700 transition"
+                            aria-label="Cart"
+                        >
+                            <Search size={20} strokeWidth={1.5} />
+                        </Link> */}
+                        {/* <Link
+                            href="/cart"
+                            className="relative text-neutral-900 hover:text-neutral-700 transition"
+                            aria-label="Cart"
+                        >
+                            <Heart size={20} strokeWidth={1.5} />
+                        </Link> */}
+                        {/* <Link
+                            href="/cart"
+                            className="relative text-neutral-900 hover:text-neutral-700 transition"
+                            aria-label="Cart"
+                        >
+                            <ShoppingBag size={20} strokeWidth={1.5} />
+                        </Link> */}
+                        <Link
+                            href="/cart"
+                            className="relative text-neutral-900 hover:text-neutral-700 transition"
+                            aria-label="Cart"
+                        >
+                            <User size={20} strokeWidth={1.5} />
+                        </Link>
+                    </div>
+                </nav>
             </div>
         </header>
     );
