@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollToTop from "@/components/ScrollToTop";
+import { CartProvider } from "./context/CartContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,8 +36,10 @@ export default function RootLayout({
         <SmoothScroll>
 
           <Header />
-          <main>{children}
+          <main><CartProvider>{children}
+
             <ScrollToTop />
+          </CartProvider>
           </main>
           <Footer />
         </SmoothScroll>

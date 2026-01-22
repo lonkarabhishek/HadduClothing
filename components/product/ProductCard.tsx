@@ -6,6 +6,9 @@ import { Heart, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import type { Product } from "./types";
+import shopifyImageLoader from "@/lib/shopifyImageLoader";
+import { useCart } from "@/app/context/CartContext";
+
 
 type Props = {
     product: Product;
@@ -13,12 +16,21 @@ type Props = {
 
 export default function ProductCard({ product }: Props) {
     const [added, setAdded] = useState(false);
+    const { addToCart } = useCart(); // ✅ ADDED
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (added) return;
+
+        // ✅ REAL SHOPIFY CART ADD
+        await addToCart(product.variantId);
+
         setAdded(true);
         setTimeout(() => setAdded(false), 1800);
     };
+
+    const price = product.price ?? 0;
+    const originalPrice = product.originalPrice;
+    const discount = product.discount;
 
     return (
         <div className="group relative">
@@ -26,11 +38,12 @@ export default function ProductCard({ product }: Props) {
             <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
                 <Link href={product.href}>
                     <Image
-                        src={product.image}
+                        loader={shopifyImageLoader}
+                        src={product.image || "/placeholder.webp"}
                         alt={product.title}
                         fill
                         sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 25vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover"
                     />
                 </Link>
 
@@ -76,35 +89,56 @@ export default function ProductCard({ product }: Props) {
 
             {/* INFO */}
             <div className="mt-4 space-y-2">
-                <span className="inline-block border border-black px-2 py-0.5 text-[10px] uppercase tracking-widest">
-                    {product.tag}
-                </span>
+                {product.tag && (
+                    <span className="inline-block border border-black px-2 py-0.5 text-[10px] uppercase tracking-widest">
+                        {product.tag}
+                    </span>
+                )}
 
                 <h3 className="text-sm leading-relaxed font-medium line-clamp-2">
                     {product.title}
                 </h3>
 
-                <div className="flex flex-wrap gap-1.5 text-[10px] text-gray-600">
-                    {product.sizes.map((size) => (
-                        <span
-                            key={size}
-                            className="border border-gray-300 px-2 py-0.5"
-                        >
-                            {size}
-                        </span>
-                    ))}
-                </div>
+                {/* SIZES */}
+                {product.sizes?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 text-[10px]">
+                        {product.sizes.map((size) => (
+                            <span
+                                key={size}
+                                className="
+                                    border border-gray-300
+                                    px-2 py-0.5
+                                    text-gray-600
+                                    cursor-pointer
+                                    transition-all duration-200 ease-out
+                                    hover:bg-[#0A3E08]
+                                    hover:text-white
+                                    hover:border-[#0A3E08]
+                                "
+                            >
+                                {size}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
+                {/* PRICE */}
                 <div className="flex items-center gap-2 text-sm">
                     <span className="font-semibold">
-                        ₹ {product.price.toLocaleString()}
+                        ₹ {price.toLocaleString()}
                     </span>
-                    <span className="text-gray-400 line-through text-xs">
-                        ₹ {product.originalPrice.toLocaleString()}
-                    </span>
-                    <span className="bg-[#0C4008] text-white text-[10px] px-2 py-0.5">
-                        {product.discount}
-                    </span>
+
+                    {originalPrice && (
+                        <span className="text-gray-400 line-through text-xs">
+                            ₹ {originalPrice.toLocaleString()}
+                        </span>
+                    )}
+
+                    {discount && (
+                        <span className="bg-[#0C4008] text-white text-[10px] px-2 py-0.5">
+                            {discount}
+                        </span>
+                    )}
                 </div>
             </div>
         </div>

@@ -3,47 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { shopifyFetch } from "@/lib/shopify";
+import { COLLECTIONS_QUERY } from "@/lib/queries";
 
 /* ================= TYPES ================= */
 
 type Category = {
-    id: number;
+    id: string;
     title: string;
     subtitle: string;
     description: string;
     image: string;
     href: string;
 };
-
-/* ================= DATA ================= */
-
-const categories: Category[] = [
-    {
-        id: 1,
-        title: "Hoodies",
-        subtitle: "Everyday Essential",
-        description: "Relaxed silhouettes crafted for comfort and presence.",
-        image: "/hoodies.webp",
-        href: "/collections/hoodies",
-    },
-    {
-        id: 2,
-        title: "Oversized Tees",
-        subtitle: "Modern Fit",
-        description: "Statement tees designed with breathable premium cotton.",
-        image: "/tees.webp",
-        href: "/collections/oversized-tees",
-    },
-    {
-        id: 3,
-        title: "Streetwear",
-        subtitle: "Urban Culture",
-        description: "Bold layers inspired by street and motion.",
-        image: "/street.webp",
-        href: "/collections/streetwear",
-    },
-];
 
 /* ================= SPLIT TEXT ================= */
 
@@ -71,6 +44,36 @@ function SplitText({ text }: { text: string }) {
 /* ================= SECTION ================= */
 
 export default function CategoriesSection() {
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        async function fetchCategories() {
+            try {
+                const res = await shopifyFetch(COLLECTIONS_QUERY);
+
+                const formatted: Category[] =
+                    res.data.collections.nodes.map((col: any) => ({
+                        id: col.id,
+                        title: col.title,
+                        subtitle: "Shop Collection",
+                        description:
+                            col.description ||
+                            "Explore curated styles from this collection.",
+                        image: col.image?.url || "/placeholder.webp",
+                        href: `/collections/${col.handle}`,
+                    }));
+
+                setCategories(formatted);
+            } catch (error) {
+                console.error("Failed to load collections", error);
+            }
+        }
+
+        fetchCategories();
+    }, []);
+
+    if (!categories.length) return null;
+
     return (
         <section className="pt-16 md:pt-24 pb-14 overflow-hidden">
             {/* ---------- HEADER ---------- */}
@@ -144,7 +147,6 @@ function CategoryCard({ category }: { category: Category }) {
                         fill
                         sizes="(max-width: 768px) 85vw, 440px"
                         className="object-cover"
-                        priority={false}
                     />
                 </motion.div>
 
@@ -152,27 +154,12 @@ function CategoryCard({ category }: { category: Category }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
 
                 {/* CONTENT */}
-                <div
-                    className="
-                        absolute bottom-0 w-full
-                        px-6 md:px-10
-                        pb-8 md:pb-12
-                        text-white
-                    "
-                >
+                <div className="absolute bottom-0 w-full px-6 md:px-10 pb-8 md:pb-12 text-white">
                     <div className="flex flex-col gap-3 md:gap-4 max-w-md">
-                        {/* Subtitle */}
-                        <p
-                            className="
-                                text-[10px] md:text-[11px]
-                                uppercase tracking-[0.35em]
-                                text-white/70
-                            "
-                        >
+                        <p className="text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-white/70">
                             {category.subtitle}
                         </p>
 
-                        {/* Title */}
                         <motion.h3
                             className="
                                 text-2xl md:text-4xl
@@ -185,19 +172,10 @@ function CategoryCard({ category }: { category: Category }) {
                             <SplitText text={category.title} />
                         </motion.h3>
 
-                        {/* Description */}
-                        <p
-                            className="
-                                text-xs md:text-sm
-                                text-white/80
-                                leading-relaxed
-                                max-w-sm
-                            "
-                        >
+                        <p className="text-xs md:text-sm text-white/80 leading-relaxed max-w-sm">
                             {category.description}
                         </p>
 
-                        {/* Divider */}
                         <motion.div
                             className="h-[1px] bg-white/90"
                             initial={{ width: "35%" }}
