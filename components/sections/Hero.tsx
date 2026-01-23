@@ -8,7 +8,7 @@ export default function Hero() {
     <section className="relative h-[70vh] md:h-[85vh] overflow-hidden">
       {/* Background Image */}
       <Image
-        src="/hero11.png"
+        src="/hero12.png"
         alt="Haddu Clothing - Premium Streetwear"
         fill
         priority
