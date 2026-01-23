@@ -165,7 +165,7 @@ export default function ProductDetail({ product }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
           {/* Image Gallery */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {/* Main Image */}
+            {/* Main Image - Using native img for fastest loading */}
             <div style={{
               position: 'relative',
               aspectRatio: '3/4',
@@ -174,16 +174,18 @@ export default function ProductDetail({ product }: Props) {
               overflow: 'hidden'
             }}>
               {product.images[currentImageIndex]?.url ? (
-                <Image
-                  loader={shopifyImageLoader}
-                  src={product.images[currentImageIndex].url}
+                <img
+                  src={`${product.images[currentImageIndex].url}&width=800`}
                   alt={product.images[currentImageIndex].altText || product.title}
-                  fill
-                  priority
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
                   loading="eager"
-                  quality={85}
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  decoding="async"
                 />
               ) : (
                 <div style={{
@@ -302,17 +304,18 @@ export default function ProductDetail({ product }: Props) {
                       border: currentImageIndex === index ? '2px solid #111' : '2px solid transparent',
                       cursor: 'pointer',
                       padding: 0,
-                      background: 'none'
+                      background: '#f5f5f5'
                     }}
                   >
-                    <Image
-                      loader={shopifyImageLoader}
-                      src={image.url}
+                    <img
+                      src={`${image.url}&width=150`}
                       alt={image.altText || `${product.title} ${index + 1}`}
-                      fill
-                      quality={60}
-                      style={{ objectFit: 'cover' }}
-                      sizes="72px"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                      loading="lazy"
                     />
                   </button>
                 ))}

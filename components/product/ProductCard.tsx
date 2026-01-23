@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "./types";
-import shopifyImageLoader from "@/lib/shopifyImageLoader";
 import { useCart } from "@/app/context/CartContext";
 
 type Props = {
@@ -41,22 +39,51 @@ export default function ProductCard({ product }: Props) {
   const discount = product.discount;
   const isOutOfStock = product.availableForSale === false;
 
+  // Get optimized image URL from Shopify CDN
+  const getImageUrl = (url: string, width: number = 400) => {
+    if (!url) return '';
+    return url.includes('?') ? `${url}&width=${width}` : `${url}?width=${width}`;
+  };
+
   return (
     <div className="group flex flex-col h-full">
-      {/* IMAGE */}
-      <Link href={product.href} className="block relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg flex-shrink-0">
+      {/* IMAGE - Native img for lightning fast loading */}
+      <Link
+        href={product.href}
+        style={{
+          display: 'block',
+          position: 'relative',
+          aspectRatio: '3/4',
+          overflow: 'hidden',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '8px',
+          flexShrink: 0
+        }}
+      >
         {product.image ? (
-          <Image
-            loader={shopifyImageLoader}
-            src={product.image}
+          <img
+            src={getImageUrl(product.image, 400)}
             alt={product.title}
-            fill
-            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 24vw"
-            className="object-cover"
+            loading="lazy"
+            decoding="async"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
           />
         ) : (
-          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-            <svg className="w-12 h-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: '#f5f5f5',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <svg style={{ width: '48px', height: '48px', color: '#ddd' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
@@ -64,8 +91,22 @@ export default function ProductCard({ product }: Props) {
 
         {/* Out of Stock */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <span className="bg-gray-900 text-white px-4 py-2 text-xs font-semibold uppercase">
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'rgba(255,255,255,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <span style={{
+              backgroundColor: '#111',
+              color: 'white',
+              padding: '8px 16px',
+              fontSize: '12px',
+              fontWeight: '600',
+              textTransform: 'uppercase'
+            }}>
               Sold Out
             </span>
           </div>
@@ -73,12 +114,17 @@ export default function ProductCard({ product }: Props) {
 
         {/* Tag Badge */}
         {product.tag && !isOutOfStock && (
-          <span className={`badge absolute top-2 left-2 ${
-            product.tag.toLowerCase().includes('best') ? 'badge-bestseller' :
-            product.tag.toLowerCase().includes('new') ? 'badge-new' :
-            product.tag.toLowerCase().includes('off') ? 'badge-sale' :
-            'badge-primary'
-          }`}>
+          <span style={{
+            position: 'absolute',
+            top: '8px',
+            left: '8px',
+            backgroundColor: product.tag.toLowerCase().includes('off') ? '#dc2626' : '#152312',
+            color: 'white',
+            fontSize: '11px',
+            fontWeight: '600',
+            padding: '4px 8px',
+            borderRadius: '4px'
+          }}>
             {product.tag}
           </span>
         )}
