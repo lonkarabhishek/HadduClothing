@@ -15,9 +15,17 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Haddu Clothing | Premium Streetwear",
   description: "Premium streetwear designed for everyday confidence. Shop oversized tees, hoodies & more.",
+  manifest: "/manifest.json",
   icons: {
     icon: "/logo.webp",
     apple: "/logo.webp",
+    shortcut: "/logo.webp",
+  },
+  openGraph: {
+    title: "Haddu Clothing | Premium Streetwear",
+    description: "Premium streetwear designed for everyday confidence.",
+    siteName: "Haddu Clothing",
+    type: "website",
   },
 };
 
