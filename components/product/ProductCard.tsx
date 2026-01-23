@@ -2,145 +2,165 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, Check } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "./types";
 import shopifyImageLoader from "@/lib/shopifyImageLoader";
 import { useCart } from "@/app/context/CartContext";
 
-
 type Props = {
-    product: Product;
+  product: Product;
 };
 
 export default function ProductCard({ product }: Props) {
-    const [added, setAdded] = useState(false);
-    const { addToCart } = useCart(); // ✅ ADDED
+  const [added, setAdded] = useState(false);
+  const { addToCart, isLoading } = useCart();
 
-    const handleAddToCart = async () => {
-        if (added) return;
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-        // ✅ REAL SHOPIFY CART ADD
-        await addToCart(product.variantId);
+    if (!product.variantId) {
+      window.location.href = product.href;
+      return;
+    }
 
-        setAdded(true);
-        setTimeout(() => setAdded(false), 1800);
-    };
+    if (added || isLoading) return;
 
-    const price = product.price ?? 0;
-    const originalPrice = product.originalPrice;
-    const discount = product.discount;
+    try {
+      await addToCart(product.variantId);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    }
+  };
 
-    return (
-        <div className="group relative">
-            {/* IMAGE */}
-            <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-                <Link href={product.href}>
-                    <Image
-                        loader={shopifyImageLoader}
-                        src={product.image || "/placeholder.webp"}
-                        alt={product.title}
-                        fill
-                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 25vw"
-                        className="object-cover"
-                    />
-                </Link>
+  const price = product.price ?? 0;
+  const originalPrice = product.originalPrice;
+  const discount = product.discount;
+  const isOutOfStock = product.availableForSale === false;
 
-                {/* WISHLIST */}
-                <button
-                    aria-label="Add to wishlist"
-                    className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"
-                >
-                    <Heart size={18} />
-                </button>
+  return (
+    <div className="group flex flex-col h-full">
+      {/* IMAGE */}
+      <Link href={product.href} className="block relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg flex-shrink-0">
+        {product.image ? (
+          <Image
+            loader={shopifyImageLoader}
+            src={product.image}
+            alt={product.title}
+            fill
+            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 24vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+            <svg className="w-12 h-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
 
-                {/* ADD TO CART */}
-                <motion.button
-                    onClick={handleAddToCart}
-                    animate={{ width: added ? 52 : 160 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 h-11 bg-black text-white uppercase tracking-widest text-[10px] flex items-center justify-center overflow-hidden hover:bg-[#0A3E08] transition"
-                >
-                    <AnimatePresence mode="wait">
-                        {!added ? (
-                            <motion.span
-                                key="text"
-                                exit={{ opacity: 0, y: -6 }}
-                                transition={{ duration: 0.3 }}
-                                className="flex items-center gap-2"
-                            >
-                                <ShoppingBag size={12} />
-                                Add to Cart
-                            </motion.span>
-                        ) : (
-                            <motion.span
-                                key="icon"
-                                initial={{ scale: 0.6, opacity: 0 }}
-                                animate={{ scale: [1, 1.25, 1], opacity: 1 }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                <ShoppingBag size={16} />
-                            </motion.span>
-                        )}
-                    </AnimatePresence>
-                </motion.button>
-            </div>
+        {/* Out of Stock */}
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+            <span className="bg-gray-900 text-white px-4 py-2 text-xs font-semibold uppercase">
+              Sold Out
+            </span>
+          </div>
+        )}
 
-            {/* INFO */}
-            <div className="mt-4 space-y-2">
-                {product.tag && (
-                    <span className="inline-block border border-black px-2 py-0.5 text-[10px] uppercase tracking-widest">
-                        {product.tag}
-                    </span>
-                )}
+        {/* Tag Badge */}
+        {product.tag && !isOutOfStock && (
+          <span className={`badge absolute top-2 left-2 ${
+            product.tag.toLowerCase().includes('best') ? 'badge-bestseller' :
+            product.tag.toLowerCase().includes('new') ? 'badge-new' :
+            product.tag.toLowerCase().includes('off') ? 'badge-sale' :
+            'badge-primary'
+          }`}>
+            {product.tag}
+          </span>
+        )}
+      </Link>
 
-                <h3 className="text-sm leading-relaxed font-medium line-clamp-2">
-                    {product.title}
-                </h3>
+      {/* INFO - Fixed height section */}
+      <div className="mt-3 flex flex-col flex-grow">
+        <Link href={product.href} className="flex-grow">
+          <h3 className="text-[14px] font-medium line-clamp-2 leading-tight min-h-[40px]">
+            {product.title}
+          </h3>
+        </Link>
 
-                {/* SIZES */}
-                {product.sizes?.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 text-[10px]">
-                        {product.sizes.map((size) => (
-                            <span
-                                key={size}
-                                className="
-                                    border border-gray-300
-                                    px-2 py-0.5
-                                    text-gray-600
-                                    cursor-pointer
-                                    transition-all duration-200 ease-out
-                                    hover:bg-[#0A3E08]
-                                    hover:text-white
-                                    hover:border-[#0A3E08]
-                                "
-                            >
-                                {size}
-                            </span>
-                        ))}
-                    </div>
-                )}
+        {/* Price Row */}
+        <div className="flex items-center gap-2 mt-2">
+          <span className={`text-[16px] font-bold ${isOutOfStock ? "text-gray-400" : ""}`}>
+            ₹{price.toLocaleString("en-IN")}
+          </span>
 
-                {/* PRICE */}
-                <div className="flex items-center gap-2 text-sm">
-                    <span className="font-semibold">
-                        ₹ {price.toLocaleString()}
-                    </span>
+          {originalPrice && (
+            <span className="text-[13px] text-gray-400 line-through">
+              ₹{originalPrice.toLocaleString("en-IN")}
+            </span>
+          )}
 
-                    {originalPrice && (
-                        <span className="text-gray-400 line-through text-xs">
-                            ₹ {originalPrice.toLocaleString()}
-                        </span>
-                    )}
-
-                    {discount && (
-                        <span className="bg-[#0C4008] text-white text-[10px] px-2 py-0.5">
-                            {discount}
-                        </span>
-                    )}
-                </div>
-            </div>
+          {discount && (
+            <span className="text-[12px] font-semibold text-green-600">{discount}</span>
+          )}
         </div>
-    );
+
+        {/* Add to Cart Button */}
+        {!isOutOfStock ? (
+          <button
+            onClick={handleAddToCart}
+            disabled={isLoading}
+            style={{
+              marginTop: '10px',
+              width: '100%',
+              height: '36px',
+              backgroundColor: added ? '#16a34a' : '#152312',
+              color: 'white',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: '600',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            {added ? (
+              <>
+                <Check size={16} />
+                Added
+              </>
+            ) : (
+              "Add to Cart"
+            )}
+          </button>
+        ) : (
+          <div
+            style={{
+              marginTop: '10px',
+              width: '100%',
+              height: '36px',
+              backgroundColor: '#e5e5e5',
+              color: '#999',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            Sold Out
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

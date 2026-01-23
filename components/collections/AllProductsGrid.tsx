@@ -1,89 +1,111 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import ProductCard from "@/components/product/ProductCard";
 import type { Product } from "@/components/product/types";
 import { shopifyFetch } from "@/lib/shopify";
 import { PRODUCTS_QUERY } from "@/lib/queries";
+import { mockProducts } from "@/lib/mockData";
 
 export default function AllProductsGrid() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const res = await shopifyFetch(PRODUCTS_QUERY);
-                const shopifyProducts = res.data.products.nodes;
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await shopifyFetch(PRODUCTS_QUERY);
 
-                const formattedProducts: Product[] = shopifyProducts.map((node: any) => {
-                    const sizes =
-                        Array.from(
-                            new Set(
-                                node.variants?.nodes
-                                    ?.map((variant: any) =>
-                                        variant.selectedOptions.find(
-                                            (opt: any) => opt.name === "Size"
-                                        )?.value
-                                    )
-                                    .filter(Boolean)
-                            )
-                        ) || [];
-
-                    return {
-                        id: node.id,
-                        title: node.title,
-                        tag: "New Drop",
-                        image:
-                            node.featuredImage?.url ||
-                            node.images?.nodes?.[0]?.url ||
-                            "/placeholder.webp",
-                        price: Number(node.priceRange?.minVariantPrice?.amount ?? 0),
-                        originalPrice: undefined,
-                        discount: undefined,
-                        sizes, // ✅ UNIQUE SIZES ONLY
-                        href: `/products/${node.handle}`,
-                    };
-                });
-
-                setProducts(formattedProducts);
-            } catch (err) {
-                console.error("Failed to load products", err);
-            } finally {
-                setLoading(false);
-            }
+        if (!res) {
+          setProducts(mockProducts);
+          setLoading(false);
+          return;
         }
 
-        fetchProducts();
-    }, []);
+        const shopifyProducts = res.data.products.nodes;
 
-    if (loading) {
-        return (
-            <p className="text-center py-20 text-sm text-muted-foreground">
-                Loading products...
-            </p>
-        );
+        const formattedProducts: Product[] = shopifyProducts.map((node: any) => {
+          const sizes: string[] =
+            node.options?.find((opt: any) => opt.name === "Size")?.values || [];
+
+          const firstVariant = node.variants?.nodes?.[0];
+          const comparePrice = node.compareAtPriceRange?.minVariantPrice?.amount;
+          const price = Number(node.priceRange?.minVariantPrice?.amount ?? 0);
+          const hasDiscount = comparePrice && Number(comparePrice) > price;
+
+          return {
+            id: node.id,
+            handle: node.handle,
+            title: node.title,
+            tag: node.tags?.includes("bestseller") ? "Best Seller" : undefined,
+            image: node.featuredImage?.url || node.images?.nodes?.[0]?.url || null,
+            hoverImage: node.images?.nodes?.[1]?.url,
+            price,
+            originalPrice: hasDiscount ? Number(comparePrice) : undefined,
+            discount: hasDiscount
+              ? `${Math.round(((Number(comparePrice) - price) / Number(comparePrice)) * 100)}% OFF`
+              : undefined,
+            sizes,
+            href: `/products/${node.handle}`,
+            variantId: firstVariant?.id,
+            availableForSale: firstVariant?.availableForSale ?? true,
+          };
+        });
+
+        setProducts(formattedProducts);
+      } catch (err) {
+        console.error("Failed to load products", err);
+        setProducts(mockProducts);
+      } finally {
+        setLoading(false);
+      }
     }
 
+    fetchProducts();
+  }, []);
+
+  if (error) {
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="
-        grid gap-x-6 gap-y-16
-        grid-cols-1
-        sm:grid-cols-2
-        lg:grid-cols-3
-        xl:grid-cols-4
-      "
+      <div className="py-16 text-center">
+        <p className="text-gray-600 mb-4">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="btn btn-outline"
         >
-            {products.map((product) => (
-                <div key={product.id}>
-                    <ProductCard product={product} />
-                </div>
-            ))}
-        </motion.div>
+          Try Again
+        </button>
+      </div>
     );
+  }
+
+  if (loading) {
+    return (
+      <div className="product-grid">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="space-y-3">
+            <div className="skeleton aspect-product rounded-lg" />
+            <div className="skeleton h-4 w-3/4 rounded" />
+            <div className="skeleton h-4 w-1/2 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="py-16 text-center">
+        <p className="text-gray-500 text-lg">No products found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="product-grid">
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
 }

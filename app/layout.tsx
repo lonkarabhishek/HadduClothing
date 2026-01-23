@@ -1,25 +1,28 @@
 import "./globals.css";
-import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { DM_Sans } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import SmoothScroll from "@/components/SmoothScroll";
-import ScrollToTop from "@/components/ScrollToTop";
+import CartSlideOver from "@/components/cart/CartSlideOver";
 import { CartProvider } from "./context/CartContext";
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
 });
 
 export const metadata: Metadata = {
   title: "Haddu Clothing | Premium Streetwear",
-  description: "Modern streetwear designed for everyday confidence.",
+  description: "Premium streetwear designed for everyday confidence. Shop oversized tees, hoodies & more.",
+  icons: {
+    icon: "/logo.webp",
+    apple: "/logo.webp",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#152312",
 };
 
 export default function RootLayout({
@@ -29,22 +32,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        suppressHydrationWarning
-        className={`${inter.variable} ${playfair.variable} font-sans bg-white text-neutral-900`}
-      >
-        <SmoothScroll>
-
+      <body className={`${dmSans.variable} font-sans bg-white text-black`}>
+        <CartProvider>
           <Header />
-          <main><CartProvider>{children}
-
-            <ScrollToTop />
-          </CartProvider>
-          </main>
+          <main>{children}</main>
           <Footer />
-        </SmoothScroll>
+          <CartSlideOver />
+        </CartProvider>
       </body>
     </html>
   );
 }
-

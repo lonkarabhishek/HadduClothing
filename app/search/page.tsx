@@ -1,0 +1,195 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Search, X, Loader2 } from "lucide-react";
+import { shopifyFetch } from "@/lib/shopify";
+import { SEARCH_PRODUCTS_QUERY } from "@/lib/queries";
+import ProductCard from "@/components/product/ProductCard";
+import type { Product } from "@/components/product/types";
+
+// Transform raw Shopify product to Product type
+function transformProduct(node: any): Product {
+  const price = parseFloat(node.priceRange?.minVariantPrice?.amount || "0");
+  const compareAt = parseFloat(node.compareAtPriceRange?.minVariantPrice?.amount || "0");
+  const hasDiscount = compareAt > price;
+  const discountPercent = hasDiscount ? Math.round(((compareAt - price) / compareAt) * 100) : 0;
+
+  // Get tag from product tags
+  let tag: string | undefined;
+  if (node.tags?.includes("bestseller") || node.tags?.includes("Bestseller")) {
+    tag = "Bestseller";
+  } else if (node.tags?.includes("new") || node.tags?.includes("New")) {
+    tag = "New";
+  } else if (hasDiscount && discountPercent >= 10) {
+    tag = `${discountPercent}% OFF`;
+  }
+
+  // Get first variant for quick add
+  const firstVariant = node.variants?.nodes?.[0];
+  const sizes = node.options?.find((o: any) => o.name.toLowerCase() === "size")?.values || [];
+
+  return {
+    id: node.id,
+    handle: node.handle,
+    title: node.title,
+    tag,
+    image: node.featuredImage?.url || node.images?.nodes?.[0]?.url || "",
+    hoverImage: node.images?.nodes?.[1]?.url,
+    price,
+    originalPrice: hasDiscount ? compareAt : undefined,
+    discount: hasDiscount ? `${discountPercent}% OFF` : undefined,
+    sizes,
+    href: `/products/${node.handle}`,
+    variantId: firstVariant?.id,
+    availableForSale: firstVariant?.availableForSale ?? true,
+  };
+}
+
+export default function SearchPage() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const searchProducts = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setResults([]);
+      setHasSearched(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setHasSearched(true);
+
+    try {
+      const res = await shopifyFetch(SEARCH_PRODUCTS_QUERY, {
+        query: searchQuery,
+        first: 20,
+      });
+
+      if (res?.data?.search?.nodes) {
+        const transformed = res.data.search.nodes.map(transformProduct);
+        setResults(transformed);
+      } else {
+        setResults([]);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      searchProducts(query);
+    }, 300);
+
+    return () => clearTimeout(debounce);
+  }, [query, searchProducts]);
+
+  return (
+    <main style={{ minHeight: '100vh', backgroundColor: 'white' }}>
+      {/* Search Header */}
+      <div style={{ borderBottom: '1px solid #f3f4f6' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: '300',
+            textAlign: 'center',
+            marginBottom: '24px',
+            color: '#111'
+          }}>
+            Search Products
+          </h1>
+
+          {/* Search Input */}
+          <div style={{ maxWidth: '500px', margin: '0 auto', position: 'relative' }}>
+            <Search
+              size={20}
+              style={{
+                position: 'absolute',
+                left: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#9ca3af'
+              }}
+            />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search for products..."
+              autoFocus
+              style={{
+                width: '100%',
+                paddingLeft: '48px',
+                paddingRight: '48px',
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '50px',
+                fontSize: '16px',
+                outline: 'none',
+                backgroundColor: '#fafafa',
+                color: '#111',
+                boxSizing: 'border-box'
+              }}
+            />
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                style={{
+                  position: 'absolute',
+                  right: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  padding: '4px',
+                  color: '#9ca3af',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Results */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
+        {isLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '64px 0' }}>
+            <Loader2 size={32} className="animate-spin" style={{ color: '#9ca3af' }} />
+          </div>
+        ) : hasSearched ? (
+          results.length > 0 ? (
+            <>
+              <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px' }}>
+                {results.length} result{results.length !== 1 ? "s" : ""} for &quot;{query}&quot;
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {results.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '64px 0' }}>
+              <p style={{ color: '#6b7280', marginBottom: '8px' }}>No products found for &quot;{query}&quot;</p>
+              <p style={{ fontSize: '14px', color: '#9ca3af' }}>Try a different search term</p>
+            </div>
+          )
+        ) : (
+          <div style={{ textAlign: 'center', padding: '64px 0' }}>
+            <Search size={48} style={{ margin: '0 auto 16px', color: '#e5e7eb' }} />
+            <p style={{ color: '#6b7280' }}>Start typing to search products</p>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}

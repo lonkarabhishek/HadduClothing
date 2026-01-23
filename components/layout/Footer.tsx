@@ -1,86 +1,62 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-
-const FOOTER_LINKS = {
-    Shop: [
-        { label: "All Products", href: "/collections/all" },
-        { label: "New Arrivals", href: "/collections/new-arrivals" },
-        { label: "Best Sellers", href: "/collections/best-sellers" },
-    ],
-    Company: [
-        { label: "About Us", href: "/about" },
-        { label: "Contact", href: "/contact" },
-        { label: "Privacy Policy", href: "/privacy-policy" },
-        { label: "Terms & Conditions", href: "/terms" },
-    ],
-};
+import { Instagram } from "lucide-react";
 
 export default function Footer() {
-    return (
-        <footer className="bg-neutral-50 border-t border-neutral-200">
-            <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-20">
+  return (
+    <footer className="bg-[#152312] text-white">
+      <div className="container py-10 md:py-12">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
 
-                {/* Top */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
+          {/* Logo */}
+          <Link href="/">
+            <Image
+              src="/logo.webp"
+              alt="Haddu Clothing"
+              width={100}
+              height={28}
+              className="brightness-0 invert"
+            />
+          </Link>
 
-                    {/* Brand */}
-                    <div>
-                        <Link href="/" aria-label="Haddu Clothing">
-                            <Image
-                                src="/logo.webp"
-                                alt="Haddu Clothing Logo"
-                                width={140}
-                                height={36}
-                                priority
-                                className="object-contain"
-                            />
-                        </Link>
+          {/* Links */}
+          <nav className="flex flex-wrap items-center justify-center gap-6 text-sm">
+            <Link href="/collections/all" className="text-white/70 hover:text-white">
+              Shop
+            </Link>
+            <Link href="/about" className="text-white/70 hover:text-white">
+              About
+            </Link>
+            <Link href="/contact" className="text-white/70 hover:text-white">
+              Contact
+            </Link>
+            <Link href="/privacy" className="text-white/70 hover:text-white">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-white/70 hover:text-white">
+              Terms
+            </Link>
+          </nav>
 
-                        <p className="mt-6 text-sm leading-relaxed text-neutral-600 max-w-sm">
-                            Premium streetwear crafted with intention — minimal,
-                            timeless, and built for everyday confidence.
-                        </p>
-                    </div>
+          {/* Social */}
+          <a
+            href="https://www.instagram.com/haddu__clothings/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/70 hover:text-white"
+            aria-label="Instagram"
+          >
+            <Instagram size={22} />
+          </a>
+        </div>
 
-                    {/* Links */}
-                    {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-                        <div key={title}>
-                            <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-neutral-900">
-                                {title}
-                            </h4>
-
-                            <ul className="mt-6 space-y-4 text-sm text-neutral-600">
-                                {links.map((link) => (
-                                    <li key={link.label}>
-                                        <Link
-                                            href={link.href}
-                                            className="relative inline-block transition-all duration-300 hover:text-neutral-900
-                                            after:absolute after:left-0 after:-bottom-1 after:h-[1px] after:w-0
-                                            after:bg-neutral-900 after:transition-all after:duration-300
-                                            hover:after:w-full"
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Divider */}
-                <div className="my-14 h-px w-full bg-neutral-200" />
-
-                {/* Bottom */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs tracking-wide text-neutral-500">
-                    <p>
-                        © {new Date().getFullYear()} Haddu Clothing. All rights reserved.
-                    </p>
-                    <p className="uppercase">
-                        Designed & developed with care
-                    </p>
-                </div>
-            </div>
-        </footer>
-    );
+        {/* Copyright */}
+        <div className="mt-8 pt-6 border-t border-white/10 text-center text-sm text-white/50">
+          © {new Date().getFullYear()} Haddu Clothing
+        </div>
+      </div>
+    </footer>
+  );
 }
