@@ -164,9 +164,15 @@ export default function ProductDetail({ product }: Props) {
       <div className="container py-6 md:py-12 pb-28 md:pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
           {/* Image Gallery */}
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Main Image */}
-            <div className="relative aspect-product bg-gray-100 rounded-lg overflow-hidden">
+            <div style={{
+              position: 'relative',
+              aspectRatio: '3/4',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '12px',
+              overflow: 'hidden'
+            }}>
               {product.images[currentImageIndex]?.url ? (
                 <Image
                   loader={shopifyImageLoader}
@@ -174,45 +180,106 @@ export default function ProductDetail({ product }: Props) {
                   alt={product.images[currentImageIndex].altText || product.title}
                   fill
                   priority
-                  className="object-cover"
+                  loading="eager"
+                  quality={85}
+                  style={{ objectFit: 'cover' }}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                  <span className="text-gray-400">No image</span>
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#f5f5f5'
+                }}>
+                  <span style={{ color: '#999' }}>No image</span>
                 </div>
               )}
 
-              {/* Navigation Arrows */}
+              {/* Navigation Arrows - Always Visible */}
               {product.images.length > 1 && (
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white shadow flex items-center justify-center"
+                    style={{
+                      position: 'absolute',
+                      left: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '50%',
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e5e5',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 10
+                    }}
                     aria-label="Previous image"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={24} color="#111" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white shadow flex items-center justify-center"
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '50%',
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e5e5',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 10
+                    }}
                     aria-label="Next image"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={24} color="#111" />
                   </button>
                 </>
               )}
 
               {/* Discount Badge */}
               {hasDiscount && (
-                <span className="badge badge-sale absolute top-3 left-3">
+                <span style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  backgroundColor: '#dc2626',
+                  color: 'white',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  padding: '4px 10px',
+                  borderRadius: '4px'
+                }}>
                   {discountPercentage}% OFF
                 </span>
               )}
 
               {/* Image Counter */}
               {product.images.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
+                <div style={{
+                  position: 'absolute',
+                  bottom: '12px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  color: 'white',
+                  fontSize: '12px',
+                  padding: '4px 12px',
+                  borderRadius: '20px'
+                }}>
                   {currentImageIndex + 1} / {product.images.length}
                 </div>
               )}
@@ -220,24 +287,32 @@ export default function ProductDetail({ product }: Props) {
 
             {/* Thumbnail Gallery - Desktop */}
             {product.images.length > 1 && (
-              <div className="hidden md:flex gap-2 overflow-x-auto no-scrollbar">
+              <div className="hidden md:flex" style={{ gap: '8px', overflowX: 'auto' }}>
                 {product.images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`relative flex-shrink-0 w-20 h-24 rounded-lg overflow-hidden border-2 ${
-                      currentImageIndex === index
-                        ? "border-black"
-                        : "border-transparent"
-                    }`}
+                    style={{
+                      position: 'relative',
+                      flexShrink: 0,
+                      width: '72px',
+                      height: '90px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      border: currentImageIndex === index ? '2px solid #111' : '2px solid transparent',
+                      cursor: 'pointer',
+                      padding: 0,
+                      background: 'none'
+                    }}
                   >
                     <Image
                       loader={shopifyImageLoader}
                       src={image.url}
                       alt={image.altText || `${product.title} ${index + 1}`}
                       fill
-                      className="object-cover"
-                      sizes="80px"
+                      quality={60}
+                      style={{ objectFit: 'cover' }}
+                      sizes="72px"
                     />
                   </button>
                 ))}
