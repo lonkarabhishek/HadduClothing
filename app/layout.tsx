@@ -17,9 +17,10 @@ export const metadata: Metadata = {
   description: "Premium streetwear designed for everyday confidence. Shop oversized tees, hoodies & more.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico" },
+    ],
     apple: "/favicon.ico",
-    shortcut: "/favicon.ico",
   },
   openGraph: {
     title: "Haddu Clothing | Premium Streetwear",
