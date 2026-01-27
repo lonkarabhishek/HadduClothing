@@ -212,6 +212,50 @@ function ProductDescription({ descriptionHtml, description }: { descriptionHtml?
   );
 }
 
+// Map color names to subtle background + border + text colors
+function getColorStyle(colorName: string): { bg: string; border: string; text: string } {
+  const name = colorName.toLowerCase().replace(/\s+/g, '');
+  const map: Record<string, { bg: string; border: string; text: string }> = {
+    black:          { bg: '#333',    border: '#222',    text: '#fff' },
+    deepblack:      { bg: '#333',    border: '#222',    text: '#fff' },
+    carbonblack:    { bg: '#3a3a3a', border: '#2a2a2a', text: '#fff' },
+    white:          { bg: '#f0f0f0', border: '#ccc',    text: '#333' },
+    offwhite:       { bg: '#f5f0e8', border: '#d9d0c0', text: '#555' },
+    red:            { bg: '#d94040', border: '#c03030', text: '#fff' },
+    blue:           { bg: '#4a7ab5', border: '#3a6aa0', text: '#fff' },
+    childblue:      { bg: '#7eaed4', border: '#5e94be', text: '#fff' },
+    skyblue:        { bg: '#7ec8e3', border: '#5ab0d0', text: '#fff' },
+    navyblue:       { bg: '#2c3e6b', border: '#1e2e55', text: '#fff' },
+    navy:           { bg: '#2c3e6b', border: '#1e2e55', text: '#fff' },
+    green:          { bg: '#5a8a5a', border: '#4a7a4a', text: '#fff' },
+    mintgreen:      { bg: '#8bc5a7', border: '#6aad8a', text: '#fff' },
+    litemintgreen:  { bg: '#a0d6b8', border: '#7ec0a0', text: '#444' },
+    olivegreen:     { bg: '#6b7a4a', border: '#5a6a3a', text: '#fff' },
+    grey:           { bg: '#8a8a8a', border: '#7a7a7a', text: '#fff' },
+    gray:           { bg: '#8a8a8a', border: '#7a7a7a', text: '#fff' },
+    charcoal:       { bg: '#555',    border: '#444',    text: '#fff' },
+    maroon:         { bg: '#7a3040', border: '#602030', text: '#fff' },
+    brown:          { bg: '#8a6a4a', border: '#7a5a3a', text: '#fff' },
+    beige:          { bg: '#d4c5a0', border: '#baa880', text: '#555' },
+    pink:           { bg: '#d98aa0', border: '#c07088', text: '#fff' },
+    purple:         { bg: '#7a5a90', border: '#6a4a80', text: '#fff' },
+    yellow:         { bg: '#d4c040', border: '#baa830', text: '#555' },
+    orange:         { bg: '#d48a40', border: '#c07030', text: '#fff' },
+    cream:          { bg: '#f0e8d0', border: '#d4cbb0', text: '#555' },
+    lavender:       { bg: '#a090c0', border: '#8878aa', text: '#fff' },
+    teal:           { bg: '#508080', border: '#407070', text: '#fff' },
+    arcticsky:      { bg: '#a0c8e0', border: '#80b0cc', text: '#444' },
+    arcticskyblue:  { bg: '#a0c8e0', border: '#80b0cc', text: '#444' },
+  };
+  // Try exact match, then partial matches
+  if (map[name]) return map[name];
+  for (const key of Object.keys(map)) {
+    if (name.includes(key) || key.includes(name)) return map[key];
+  }
+  // Fallback to brand color
+  return { bg: '#3f5046', border: '#354538', text: '#fff' };
+}
+
 // Size mapping with inches
 const SIZE_INCHES: Record<string, string> = {
   "XS": "32-34\"",
@@ -562,7 +606,9 @@ export default function ProductDetail({ product }: Props) {
                     const isSelected = selectedOptions[option.name] === value;
                     const isAvailable = isOptionAvailable(option.name, value);
                     const isSize = option.name.toLowerCase() === "size";
+                    const isColor = option.name.toLowerCase() === "color";
                     const sizeInches = SIZE_INCHES[value.toUpperCase()];
+                    const colorStyle = isColor && isSelected ? getColorStyle(value) : null;
 
                     return (
                       <button
@@ -572,10 +618,16 @@ export default function ProductDetail({ product }: Props) {
                         style={{
                           minWidth: '56px',
                           padding: '10px 16px',
-                          border: isSelected ? '2px solid #3f5046' : '1px solid #ddd',
+                          border: isSelected
+                            ? `2px solid ${colorStyle ? colorStyle.border : '#3f5046'}`
+                            : '1px solid #ddd',
                           borderRadius: '8px',
-                          backgroundColor: !isAvailable ? '#f5f5f5' : isSelected ? '#3f5046' : 'white',
-                          color: !isAvailable ? '#bbb' : isSelected ? 'white' : '#333',
+                          backgroundColor: !isAvailable ? '#f5f5f5'
+                            : isSelected ? (colorStyle ? colorStyle.bg : '#3f5046')
+                            : 'white',
+                          color: !isAvailable ? '#bbb'
+                            : isSelected ? (colorStyle ? colorStyle.text : 'white')
+                            : '#333',
                           fontWeight: '500',
                           fontSize: '14px',
                           cursor: isAvailable ? 'pointer' : 'not-allowed',
