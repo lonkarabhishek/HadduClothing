@@ -73,7 +73,7 @@ export default function NewArrivals() {
   }, []);
 
   return (
-    <section className="py-10 md:py-16">
+    <section className="py-16 md:py-24">
       <div className="container">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 md:mb-8">

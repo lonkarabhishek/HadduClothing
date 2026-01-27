@@ -40,7 +40,7 @@ export default function ContactPage() {
       </p>
 
       <a
-        href="tel:+919663745344"
+        href="tel:+918050061499"
         style={{
           fontSize: '24px',
           fontWeight: 'bold',
@@ -49,12 +49,12 @@ export default function ContactPage() {
           textDecoration: 'none'
         }}
       >
-        +91 9663745344
+        +91 8050061499
       </a>
 
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
         <a
-          href="tel:+919663745344"
+          href="tel:+918050061499"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -75,7 +75,7 @@ export default function ContactPage() {
         </a>
 
         <a
-          href="https://wa.me/919663745344"
+          href="https://wa.me/918050061499"
           target="_blank"
           rel="noopener noreferrer"
           style={{

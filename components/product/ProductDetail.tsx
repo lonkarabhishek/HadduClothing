@@ -327,17 +327,17 @@ export default function ProductDetail({ product }: Props) {
           <div className="space-y-6">
             {/* Title & Price */}
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">{product.title}</h1>
-              <div className="mt-3 flex items-center gap-3">
-                <span className="text-2xl font-bold">
-                  ₹{price.toLocaleString("en-IN")}
+              <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111' }}>{product.title}</h1>
+              <div style={{ marginTop: '12px', display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                <span style={{ fontSize: '24px', fontWeight: '700', color: '#111' }}>
+                  ₹{Math.round(price).toLocaleString("en-IN")}
                 </span>
                 {hasDiscount && (
                   <>
-                    <span className="text-lg text-gray-400 line-through">
-                      ₹{compareAtPrice.toLocaleString("en-IN")}
+                    <span style={{ fontSize: '16px', color: '#999', textDecoration: 'line-through' }}>
+                      ₹{Math.round(compareAtPrice).toLocaleString("en-IN")}
                     </span>
-                    <span className="price-discount">
+                    <span style={{ fontSize: '14px', fontWeight: '600', color: '#16a34a' }}>
                       Save {discountPercentage}%
                     </span>
                   </>
@@ -348,20 +348,20 @@ export default function ProductDetail({ product }: Props) {
             {/* Options (Size, Color, etc.) */}
             {product.options.map((option) => (
               <div key={option.name}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-semibold">
-                    {option.name}: <span className="font-normal">{selectedOptions[option.name]}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <span style={{ fontWeight: '600', fontSize: '15px', color: '#111' }}>
+                    {option.name}: <span style={{ fontWeight: '400' }}>{selectedOptions[option.name]}</span>
                   </span>
                   {option.name.toLowerCase() === "size" && (
                     <button
                       onClick={() => setShowSizeGuide(true)}
-                      className="text-sm text-gray-600 underline"
+                      style={{ fontSize: '14px', color: '#666', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
                     >
                       Size Guide
                     </button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {option.values.map((value) => {
                     const isSelected = selectedOptions[option.name] === value;
                     const isAvailable = isOptionAvailable(option.name, value);
@@ -373,16 +373,35 @@ export default function ProductDetail({ product }: Props) {
                         key={value}
                         onClick={() => handleOptionChange(option.name, value)}
                         disabled={!isAvailable}
-                        className={`size-btn ${isSelected ? "selected" : ""}`}
+                        style={{
+                          minWidth: '56px',
+                          padding: '10px 16px',
+                          border: isSelected ? '2px solid #111' : '1px solid #ddd',
+                          borderRadius: '8px',
+                          backgroundColor: !isAvailable ? '#f5f5f5' : isSelected ? '#111' : 'white',
+                          color: !isAvailable ? '#bbb' : isSelected ? 'white' : '#333',
+                          fontWeight: '500',
+                          fontSize: '14px',
+                          cursor: isAvailable ? 'pointer' : 'not-allowed',
+                          opacity: isAvailable ? 1 : 0.5,
+                          textDecoration: !isAvailable ? 'line-through' : 'none',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '2px',
+                          transition: 'all 0.2s'
+                        }}
                       >
-                        <div className="flex flex-col items-center">
-                          <span>{value}</span>
-                          {isSize && sizeInches && (
-                            <span className="text-[10px] text-gray-400 font-normal">
-                              {sizeInches}
-                            </span>
-                          )}
-                        </div>
+                        <span>{value}</span>
+                        {isSize && sizeInches && (
+                          <span style={{
+                            fontSize: '10px',
+                            color: isSelected ? 'rgba(255,255,255,0.7)' : '#999',
+                            fontWeight: '400'
+                          }}>
+                            {sizeInches}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -530,7 +549,7 @@ export default function ProductDetail({ product }: Props) {
         {/* Price */}
         <div style={{ flexShrink: 0 }}>
           <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#111' }}>
-            ₹{price.toLocaleString("en-IN")}
+            ₹{Math.round(price).toLocaleString("en-IN")}
           </p>
           {hasDiscount && (
             <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '500' }}>

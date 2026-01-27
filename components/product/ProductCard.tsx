@@ -139,19 +139,19 @@ export default function ProductCard({ product }: Props) {
         </Link>
 
         {/* Price Row */}
-        <div className="flex items-center gap-2 mt-2">
-          <span className={`text-[16px] font-bold ${isOutOfStock ? "text-gray-400" : ""}`}>
-            ₹{price.toLocaleString("en-IN")}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '8px' }}>
+          <span style={{ fontSize: '16px', fontWeight: '700', color: isOutOfStock ? '#999' : '#111' }}>
+            ₹{Math.round(price).toLocaleString("en-IN")}
           </span>
 
           {originalPrice && (
-            <span className="text-[13px] text-gray-400 line-through">
-              ₹{originalPrice.toLocaleString("en-IN")}
+            <span style={{ fontSize: '13px', color: '#999', textDecoration: 'line-through' }}>
+              ₹{Math.round(originalPrice).toLocaleString("en-IN")}
             </span>
           )}
 
           {discount && (
-            <span className="text-[12px] font-semibold text-green-600">{discount}</span>
+            <span style={{ fontSize: '12px', fontWeight: '600', color: '#16a34a' }}>{discount}</span>
           )}
         </div>
 
