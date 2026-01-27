@@ -64,20 +64,20 @@ img { max-width: 100%; height: auto; display: block; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-primary {
-  background: #1a1a1a;
+  background: #3f5046;
   color: white;
   padding: 16px 32px;
   font-size: 16px;
 }
-.btn-primary:hover { background: #333333; }
+.btn-primary:hover { background: #4a5f52; }
 
 .btn-black {
-  background: var(--black);
+  background: #3f5046;
   color: white;
   padding: 16px 32px;
   font-size: 16px;
 }
-.btn-black:hover { background: #222; }
+.btn-black:hover { background: #4a5f52; }
 
 .btn-outline {
   border: 2px solid var(--black);
@@ -167,7 +167,7 @@ img { max-width: 100%; height: auto; display: block; }
   transition: all 0.15s;
 }
 .size-btn:hover:not(:disabled) { border-color: #333; }
-.size-btn.selected { border-color: #1a1a1a; background: #1a1a1a; color: white; }
+.size-btn.selected { border-color: #3f5046; background: #3f5046; color: white; }
 .size-btn:disabled { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
 
 /* ============ QUANTITY SELECTOR ============ */

@@ -572,9 +572,9 @@ export default function ProductDetail({ product }: Props) {
                         style={{
                           minWidth: '56px',
                           padding: '10px 16px',
-                          border: isSelected ? '2px solid #111' : '1px solid #ddd',
+                          border: isSelected ? '2px solid #3f5046' : '1px solid #ddd',
                           borderRadius: '8px',
-                          backgroundColor: !isAvailable ? '#f5f5f5' : isSelected ? '#111' : 'white',
+                          backgroundColor: !isAvailable ? '#f5f5f5' : isSelected ? '#3f5046' : 'white',
                           color: !isAvailable ? '#bbb' : isSelected ? 'white' : '#333',
                           fontWeight: '500',
                           fontSize: '14px',
