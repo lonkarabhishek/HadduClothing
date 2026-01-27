@@ -7,10 +7,31 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
+      {/* Header Banner */}
+      <div style={{
+        backgroundColor: '#152312',
+        color: 'white',
+        padding: '60px 24px 64px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ position: 'absolute', top: '-40px', left: '-40px', width: '150px', height: '150px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '-30px', right: '-30px', width: '120px', height: '120px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
+        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>
+          Legal
+        </p>
+        <h1 style={{ fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: '600', marginBottom: '12px', letterSpacing: '-0.02em' }}>
+          Terms of Service
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', maxWidth: '400px', margin: '0 auto' }}>
+          Our terms and conditions
+        </p>
+      </div>
+
       <div className="container py-12 md:py-20">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-light mb-8">Terms of Service</h1>
           <p className="text-sm text-gray-500 mb-8">Last updated: January 2025</p>
 
           <div className="space-y-8 text-gray-600 leading-relaxed">

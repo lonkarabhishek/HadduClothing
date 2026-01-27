@@ -90,22 +90,27 @@ export default function SearchPage() {
   }, [query, searchProducts]);
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: 'white' }}>
-      {/* Search Header */}
-      <div style={{ borderBottom: '1px solid #f3f4f6' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
-          <h1 style={{
-            fontSize: '24px',
-            fontWeight: '300',
-            textAlign: 'center',
-            marginBottom: '24px',
-            color: '#111'
-          }}>
-            Search Products
-          </h1>
+    <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
+      {/* Header Banner */}
+      <div style={{
+        backgroundColor: '#152312',
+        color: 'white',
+        padding: '60px 24px 40px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ position: 'absolute', top: '-40px', left: '-40px', width: '150px', height: '150px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '-30px', right: '-30px', width: '120px', height: '120px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
+        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>
+          Find What You Love
+        </p>
+        <h1 style={{ fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: '600', marginBottom: '24px', letterSpacing: '-0.02em' }}>
+          Search Products
+        </h1>
 
-          {/* Search Input */}
-          <div style={{ maxWidth: '500px', margin: '0 auto', position: 'relative' }}>
+        {/* Search Input inside banner */}
+        <div style={{ maxWidth: '500px', margin: '0 auto', position: 'relative' }}>
             <Search
               size={20}
               style={{
@@ -113,7 +118,7 @@ export default function SearchPage() {
                 left: '16px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: '#9ca3af'
+                color: 'rgba(255,255,255,0.5)'
               }}
             />
             <input
@@ -128,12 +133,12 @@ export default function SearchPage() {
                 paddingRight: '48px',
                 paddingTop: '16px',
                 paddingBottom: '16px',
-                border: '2px solid #e5e7eb',
+                border: '2px solid rgba(255,255,255,0.2)',
                 borderRadius: '50px',
                 fontSize: '16px',
                 outline: 'none',
-                backgroundColor: '#fafafa',
-                color: '#111',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                color: 'white',
                 boxSizing: 'border-box'
               }}
             />
@@ -146,7 +151,7 @@ export default function SearchPage() {
                   top: '50%',
                   transform: 'translateY(-50%)',
                   padding: '4px',
-                  color: '#9ca3af',
+                  color: 'rgba(255,255,255,0.5)',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer'
@@ -156,7 +161,6 @@ export default function SearchPage() {
               </button>
             )}
           </div>
-        </div>
       </div>
 
       {/* Results */}

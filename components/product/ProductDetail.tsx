@@ -16,6 +16,202 @@ type Props = {
   product: ProductDetailType;
 };
 
+// Parse description HTML into intro text + spec rows
+function parseDescription(html: string): { intro: string; specs: { label: string; value: string }[] } {
+  const specs: { label: string; value: string }[] = [];
+  let intro = "";
+
+  // Decode HTML entities
+  const decode = (s: string) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+
+  // Replace <br>, <br/>, <br /> with newlines, then strip all tags
+  const text = decode(html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n").replace(/<[^>]*>/g, ""));
+
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+
+  for (const line of lines) {
+    const colonIdx = line.indexOf(":");
+    if (colonIdx > 0 && colonIdx < 30) {
+      const label = line.substring(0, colonIdx).trim();
+      const value = line.substring(colonIdx + 1).trim();
+      if (label && value) {
+        specs.push({ label, value });
+        continue;
+      }
+    }
+    // It's intro text
+    if (!intro) {
+      intro = line;
+    } else if (specs.length === 0) {
+      intro += " " + line;
+    }
+  }
+
+  return { intro, specs };
+}
+
+function AccordionItem({ icon, title, subtitle, children, defaultOpen = false }: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div style={{ borderBottom: '1px solid #f0f0f0' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          padding: '20px 0',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          textAlign: 'left',
+        }}
+      >
+        <div style={{
+          width: '40px',
+          height: '40px',
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#444'
+        }}>
+          {icon}
+        </div>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>{title}</p>
+          <p style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>{subtitle}</p>
+        </div>
+        <svg
+          width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"
+          style={{
+            flexShrink: 0,
+            transition: 'transform 0.2s',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)'
+          }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div style={{ paddingBottom: '20px', paddingLeft: '54px' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductDescription({ descriptionHtml, description }: { descriptionHtml?: string; description?: string }) {
+  const { intro, specs } = descriptionHtml
+    ? parseDescription(descriptionHtml)
+    : { intro: description || "", specs: [] };
+
+  const hasContent = intro || specs.length > 0 || descriptionHtml;
+
+  return (
+    <div style={{ paddingTop: '20px', borderTop: '1px solid #eee' }}>
+      {/* Spec rows - static, not collapsible */}
+      {specs.length > 0 && (
+        <div style={{ borderBottom: '1px solid #f0f0f0' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '0',
+            padding: '8px 0',
+          }}>
+            {specs.map((spec, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '12px 0',
+                  borderBottom: '1px solid #f0f0f0',
+                  paddingRight: i % 2 === 0 ? '16px' : '0',
+                  paddingLeft: i % 2 === 1 ? '16px' : '0',
+                }}
+              >
+                <p style={{ fontSize: '12px', color: '#999', marginBottom: '4px' }}>
+                  {spec.label}
+                </p>
+                <p style={{ fontSize: '14px', fontWeight: '600', color: '#111' }}>
+                  {spec.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Product Description accordion - open by default */}
+      {(intro || (!specs.length && (descriptionHtml || description))) && (
+        <AccordionItem
+          defaultOpen
+          icon={
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          }
+          title="Product Description"
+          subtitle="Manufacture, Care and Fit"
+        >
+          {intro ? (
+            <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.8' }}>{intro}</p>
+          ) : descriptionHtml ? (
+            <div style={{ fontSize: '14px', color: '#555', lineHeight: '1.8' }} dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
+          ) : description ? (
+            <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.8' }}>{description}</p>
+          ) : null}
+        </AccordionItem>
+      )}
+
+      <AccordionItem
+        icon={
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="1" y="3" width="15" height="13" rx="2" />
+            <polyline points="16 8 20 8 23 11 23 16 20 16" />
+            <circle cx="5.5" cy="18.5" r="2.5" />
+            <circle cx="18.5" cy="18.5" r="2.5" />
+            <line x1="8" y1="16" x2="16" y2="16" />
+          </svg>
+        }
+        title="Free Shipping"
+        subtitle="We offer free shipping across India"
+      >
+        <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.7' }}>
+          Enjoy free shipping on all orders across India. Orders are processed within 1-2 business days and typically delivered in 5-7 business days.
+        </p>
+      </AccordionItem>
+
+      <AccordionItem
+        icon={
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <polyline points="1 4 1 10 7 10" />
+            <polyline points="23 20 23 14 17 14" />
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+          </svg>
+        }
+        title="7 Days Returns & Exchange"
+        subtitle="Know about return & exchange policy"
+      >
+        <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.7' }}>
+          Not satisfied? Return or exchange unworn items with original tags within 7 days of delivery. Contact us to initiate a return.
+        </p>
+      </AccordionItem>
+    </div>
+  );
+}
+
 // Size mapping with inches
 const SIZE_INCHES: Record<string, string> = {
   "XS": "32-34\"",
@@ -153,7 +349,7 @@ export default function ProductDetail({ product }: Props) {
 
   const price = selectedVariant?.price ?? product.price;
   const compareAtPrice = selectedVariant?.compareAtPrice ?? product.compareAtPrice;
-  const hasDiscount = compareAtPrice && compareAtPrice > price;
+  const hasDiscount = !!(compareAtPrice && compareAtPrice > price);
   const discountPercentage = hasDiscount
     ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
     : 0;
@@ -472,19 +668,10 @@ export default function ProductDetail({ product }: Props) {
             </div>
 
             {/* Description */}
-            <div className="pt-6 border-t">
-              <h3 className="font-semibold mb-3">Description</h3>
-              {product.descriptionHtml ? (
-                <div
-                  className="prose text-gray-600 text-sm"
-                  dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-                />
-              ) : (
-                <p className="text-gray-600 text-sm">
-                  {product.description || "No description available."}
-                </p>
-              )}
-            </div>
+            <ProductDescription
+              descriptionHtml={product.descriptionHtml}
+              description={product.description}
+            />
           </div>
         </div>
       </div>

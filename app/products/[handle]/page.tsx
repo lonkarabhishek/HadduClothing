@@ -19,7 +19,8 @@ function transformProduct(product: any): ProductDetailType {
     descriptionHtml: product.descriptionHtml,
     images: product.images.nodes,
     price: parseFloat(product.priceRange.minVariantPrice.amount),
-    compareAtPrice: product.compareAtPriceRange?.minVariantPrice?.amount
+    compareAtPrice: product.compareAtPriceRange?.minVariantPrice?.amount &&
+      parseFloat(product.compareAtPriceRange.minVariantPrice.amount) > 0
       ? parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
       : undefined,
     currencyCode: product.priceRange.minVariantPrice.currencyCode,
@@ -28,7 +29,8 @@ function transformProduct(product: any): ProductDetailType {
       title: v.title,
       availableForSale: v.availableForSale,
       price: parseFloat(v.price.amount),
-      compareAtPrice: v.compareAtPrice?.amount
+      compareAtPrice: v.compareAtPrice?.amount &&
+        parseFloat(v.compareAtPrice.amount) > 0
         ? parseFloat(v.compareAtPrice.amount)
         : undefined,
       selectedOptions: v.selectedOptions,
