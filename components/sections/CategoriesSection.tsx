@@ -61,7 +61,7 @@ export default function CategoriesSection() {
             fontSize: '12px',
             textTransform: 'uppercase',
             letterSpacing: '0.2em',
-            color: '#152312',
+            color: '#3f5046',
             marginBottom: '12px',
             fontWeight: '500'
           }}>

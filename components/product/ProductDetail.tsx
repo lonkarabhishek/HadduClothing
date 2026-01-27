@@ -752,7 +752,7 @@ export default function ProductDetail({ product }: Props) {
           style={{
             flex: 1,
             height: '48px',
-            backgroundColor: selectedVariant?.availableForSale ? (isAdding ? '#16a34a' : '#152312') : '#e5e5e5',
+            backgroundColor: selectedVariant?.availableForSale ? (isAdding ? '#16a34a' : '#3f5046') : '#e5e5e5',
             color: selectedVariant?.availableForSale ? 'white' : '#999',
             fontWeight: '600',
             fontSize: '16px',

@@ -11,7 +11,7 @@ export default function ContactPage() {
     <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
       {/* Header Banner */}
       <div style={{
-        backgroundColor: '#152312',
+        backgroundColor: '#3f5046',
         color: 'white',
         padding: '60px 24px 64px',
         textAlign: 'center',
@@ -49,7 +49,7 @@ export default function ContactPage() {
           justifyContent: 'center',
           marginBottom: '24px'
         }}>
-          <Phone size={40} color="#152312" />
+          <Phone size={40} color="#3f5046" />
         </div>
 
         <p style={{ fontSize: '16px', color: '#666', marginBottom: '8px' }}>
@@ -61,7 +61,7 @@ export default function ContactPage() {
         style={{
           fontSize: '24px',
           fontWeight: 'bold',
-          color: '#152312',
+          color: '#3f5046',
           marginBottom: '32px',
           textDecoration: 'none'
         }}
@@ -79,7 +79,7 @@ export default function ContactPage() {
             gap: '8px',
             height: '48px',
             padding: '0 24px',
-            backgroundColor: '#152312',
+            backgroundColor: '#3f5046',
             color: 'white',
             borderRadius: '8px',
             fontWeight: '600',

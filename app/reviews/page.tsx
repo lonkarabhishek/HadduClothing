@@ -47,7 +47,7 @@ export default function ReviewsPage() {
           justifyContent: 'center',
           height: '48px',
           padding: '0 32px',
-          backgroundColor: '#152312',
+          backgroundColor: '#3f5046',
           color: 'white',
           borderRadius: '8px',
           fontWeight: '600',

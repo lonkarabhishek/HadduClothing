@@ -6,7 +6,7 @@ import { Instagram } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#152312] text-white">
+    <footer className="bg-[#3f5046] text-white">
       <div className="container py-10 md:py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
 

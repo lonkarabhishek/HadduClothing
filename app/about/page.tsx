@@ -68,7 +68,7 @@ export default function AboutPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#152312',
+        backgroundColor: '#3f5046',
         overflow: 'hidden'
       }}>
         {/* Animated Background Pattern */}
@@ -207,7 +207,7 @@ export default function AboutPage() {
                 gap: '12px',
                 padding: '16px 40px',
                 backgroundColor: 'white',
-                color: '#152312',
+                color: '#3f5046',
                 fontSize: '13px',
                 fontWeight: '600',
                 letterSpacing: '0.1em',
@@ -279,7 +279,7 @@ export default function AboutPage() {
             <span style={{
               display: 'inline-block',
               padding: '8px 20px',
-              backgroundColor: '#152312',
+              backgroundColor: '#3f5046',
               color: 'white',
               fontSize: '11px',
               letterSpacing: '0.2em',
@@ -295,7 +295,7 @@ export default function AboutPage() {
               color: '#111',
               marginBottom: '16px'
             }}>
-              The Meaning of <span style={{ color: '#152312' }}>Haddu</span>
+              The Meaning of <span style={{ color: '#3f5046' }}>Haddu</span>
             </h2>
             <p style={{ color: '#666', fontSize: '16px', maxWidth: '500px', margin: '0 auto' }}>
               A name with deep roots and powerful meaning
@@ -331,7 +331,7 @@ export default function AboutPage() {
                 right: '-30px',
                 width: '120px',
                 height: '120px',
-                backgroundColor: '#152312',
+                backgroundColor: '#3f5046',
                 opacity: 0.05,
                 borderRadius: '50%'
               }} />
@@ -381,7 +381,7 @@ export default function AboutPage() {
                 right: '-30px',
                 width: '120px',
                 height: '120px',
-                backgroundColor: '#152312',
+                backgroundColor: '#3f5046',
                 opacity: 0.05,
                 borderRadius: '50%'
               }} />
@@ -551,7 +551,7 @@ export default function AboutPage() {
                   width: '56px',
                   height: '56px',
                   borderRadius: '12px',
-                  backgroundColor: '#152312',
+                  backgroundColor: '#3f5046',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -604,7 +604,7 @@ export default function AboutPage() {
                 width: '64px',
                 height: '64px',
                 borderRadius: '50%',
-                backgroundColor: '#152312',
+                backgroundColor: '#3f5046',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -629,7 +629,7 @@ export default function AboutPage() {
             <div style={{
               width: '60px',
               height: '2px',
-              backgroundColor: '#152312',
+              backgroundColor: '#3f5046',
               margin: '0 auto 40px'
             }} />
 
@@ -670,7 +670,7 @@ export default function AboutPage() {
                 marginTop: '48px',
                 fontSize: '24px',
                 fontWeight: '600',
-                color: '#152312'
+                color: '#3f5046'
               }}
             >
               This is streetwear for the self-made.
@@ -682,7 +682,7 @@ export default function AboutPage() {
       {/* CTA Section */}
       <section style={{
         padding: '100px 24px',
-        backgroundColor: '#152312',
+        backgroundColor: '#3f5046',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -744,7 +744,7 @@ export default function AboutPage() {
                 gap: '8px',
                 padding: '16px 40px',
                 backgroundColor: 'white',
-                color: '#152312',
+                color: '#3f5046',
                 fontSize: '14px',
                 fontWeight: '600',
                 borderRadius: '8px',

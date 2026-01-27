@@ -64,7 +64,7 @@ export default function Header() {
     <>
       {/* Announcement Bar */}
       {bannerVisible && (
-        <div className="bg-[#152312] text-white py-2.5 px-4 text-center text-xs md:text-sm font-medium tracking-wide relative">
+        <div className="bg-[#3f5046] text-white py-2.5 px-4 text-center text-xs md:text-sm font-medium tracking-wide relative">
           <span>FREE SHIPPING ON ORDERS ABOVE ₹999</span>
           <button
             onClick={dismissBanner}
@@ -135,7 +135,7 @@ export default function Header() {
               >
                 <ShoppingBag size={24} />
                 {totalQuantity > 0 && (
-                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-[#152312] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-[#3f5046] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {totalQuantity > 9 ? "9+" : totalQuantity}
                   </span>
                 )}
@@ -302,7 +302,7 @@ export default function Header() {
                 justifyContent: 'center',
                 width: '100%',
                 height: '52px',
-                backgroundColor: '#152312',
+                backgroundColor: '#3f5046',
                 color: 'white',
                 borderRadius: '8px',
                 fontWeight: '600',

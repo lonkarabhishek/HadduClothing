@@ -450,7 +450,7 @@ export default function CartSlideOver() {
               style={{
                 flex: 1,
                 height: '48px',
-                backgroundColor: '#152312',
+                backgroundColor: '#3f5046',
                 color: 'white',
                 fontWeight: '600',
                 fontSize: '16px',

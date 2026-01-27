@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
       {/* Header Banner */}
       <div style={{
-        backgroundColor: '#152312',
+        backgroundColor: '#3f5046',
         color: 'white',
         padding: '60px 24px 64px',
         textAlign: 'center',
