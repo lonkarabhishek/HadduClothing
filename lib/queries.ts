@@ -8,7 +8,7 @@ const PRODUCT_CARD_FRAGMENT = `
       url
       altText
     }
-    images(first: 2) {
+    images(first: 6) {
       nodes {
         url
         altText

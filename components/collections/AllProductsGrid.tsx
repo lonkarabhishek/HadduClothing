@@ -40,6 +40,7 @@ export default function AllProductsGrid() {
             title: node.title,
             tag: node.tags?.includes("bestseller") ? "Best Seller" : undefined,
             image: node.featuredImage?.url || node.images?.nodes?.[0]?.url || null,
+            images: node.images?.nodes?.map((img: any) => img.url).filter(Boolean) || [],
             hoverImage: node.images?.nodes?.[1]?.url,
             price,
             originalPrice: hasDiscount ? Number(comparePrice) : undefined,

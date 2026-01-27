@@ -43,6 +43,7 @@ export default function NewArrivals() {
             title: node.title,
             tag: "New",
             image: node.featuredImage?.url || node.images?.nodes?.[0]?.url || null,
+            images: node.images?.nodes?.map((img: any) => img.url).filter(Boolean) || [],
             hoverImage: node.images?.nodes?.[1]?.url,
             price,
             originalPrice: hasDiscount ? Number(comparePrice) : undefined,

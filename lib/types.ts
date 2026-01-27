@@ -100,6 +100,7 @@ export type Product = {
   title: string;
   tag?: string;
   image: string;
+  images?: string[];
   hoverImage?: string;
   price: number;
   originalPrice?: number;

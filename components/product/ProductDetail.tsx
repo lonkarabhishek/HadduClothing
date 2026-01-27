@@ -293,6 +293,7 @@ function transformProductForCard(node: any): Product {
     title: node.title,
     tag,
     image: node.featuredImage?.url || node.images?.nodes?.[0]?.url || "",
+    images: node.images?.nodes?.map((img: any) => img.url).filter(Boolean) || [],
     hoverImage: node.images?.nodes?.[1]?.url,
     price,
     originalPrice: hasDiscount ? compareAt : undefined,
