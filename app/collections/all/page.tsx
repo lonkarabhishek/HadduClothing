@@ -7,17 +7,65 @@ export const metadata = {
 
 export default function AllCollectionsPage() {
   return (
-    <main className="min-h-screen">
+    <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
       {/* Header */}
-      <div className="bg-[#152312] text-white py-10 md:py-16">
-        <div className="container text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">All Products</h1>
-          <p className="text-white/80">Premium streetwear for everyday confidence</p>
-        </div>
+      <div style={{
+        backgroundColor: '#152312',
+        color: 'white',
+        padding: '60px 24px 64px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative elements */}
+        <div style={{
+          position: 'absolute',
+          top: '-40px',
+          left: '-40px',
+          width: '150px',
+          height: '150px',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: '50%'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-30px',
+          right: '-30px',
+          width: '120px',
+          height: '120px',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: '50%'
+        }} />
+
+        <p style={{
+          fontSize: '11px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.3em',
+          color: 'rgba(255,255,255,0.5)',
+          marginBottom: '12px'
+        }}>
+          Explore Our Collection
+        </p>
+        <h1 style={{
+          fontSize: 'clamp(28px, 5vw, 42px)',
+          fontWeight: '600',
+          marginBottom: '12px',
+          letterSpacing: '-0.02em'
+        }}>
+          All Products
+        </h1>
+        <p style={{
+          color: 'rgba(255,255,255,0.6)',
+          fontSize: '15px',
+          maxWidth: '400px',
+          margin: '0 auto'
+        }}>
+          Premium streetwear for everyday confidence
+        </p>
       </div>
 
       {/* Products */}
-      <div className="container py-8 md:py-12">
+      <div className="container" style={{ padding: '40px 16px 60px' }}>
         <AllProductsGrid />
       </div>
     </main>
