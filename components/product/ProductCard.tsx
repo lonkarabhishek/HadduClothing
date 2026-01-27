@@ -2,23 +2,39 @@
 
 import Link from "next/link";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { Product } from "./types";
 import { useCart } from "@/app/context/CartContext";
 
 type Props = {
   product: Product;
+  priority?: boolean; // true for above-the-fold products
 };
 
-export default function ProductCard({ product }: Props) {
+export default function ProductCard({ product, priority = false }: Props) {
   const [added, setAdded] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
+  const [imagesPreloaded, setImagesPreloaded] = useState(false);
   const { addToCart, isLoading } = useCart();
 
   const allImages = product.images && product.images.length > 1
     ? product.images
     : [product.image].filter(Boolean);
+
+  // Preload all images in background on mount
+  useEffect(() => {
+    if (allImages.length <= 1) return;
+    let loaded = 0;
+    allImages.forEach((url) => {
+      const img = new Image();
+      img.src = getImageUrl(url, 400);
+      img.onload = () => {
+        loaded++;
+        if (loaded === allImages.length) setImagesPreloaded(true);
+      };
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -57,17 +73,11 @@ export default function ProductCard({ product }: Props) {
   const discount = product.discount;
   const isOutOfStock = product.availableForSale === false;
 
-  const getImageUrl = (url: string, width: number = 400) => {
-    if (!url) return '';
-    return url.includes('?') ? `${url}&width=${width}` : `${url}?width=${width}`;
-  };
-
   return (
     <div
       className="group flex flex-col h-full"
       onMouseEnter={() => {
         setHovered(true);
-        // Auto-switch to second image on hover if available
         if (allImages.length > 1) setCurrentImage(1);
       }}
       onMouseLeave={() => { setHovered(false); setCurrentImage(0); }}
@@ -90,21 +100,28 @@ export default function ProductCard({ product }: Props) {
           flexShrink: 0
         }}
       >
+        {/* Render ALL images stacked, toggle visibility for instant switching */}
         {allImages.length > 0 ? (
-          <img
-            src={getImageUrl(allImages[currentImage], 400)}
-            alt={product.title}
-            loading="lazy"
-            decoding="async"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              transition: 'opacity 0.3s ease',
-            }}
-          />
+          allImages.map((url, i) => (
+            <img
+              key={i}
+              src={getImageUrl(url, 400)}
+              alt={i === 0 ? product.title : `${product.title} - ${i + 1}`}
+              loading={priority && i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              {...(priority && i === 0 ? { fetchPriority: "high" as any } : {})}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                opacity: i === currentImage ? 1 : 0,
+                transition: 'opacity 0.35s ease',
+                zIndex: i === currentImage ? 1 : 0,
+              }}
+            />
+          ))
         ) : (
           <div style={{
             position: 'absolute',
@@ -178,7 +195,7 @@ export default function ProductCard({ product }: Props) {
           </>
         )}
 
-        {/* Dot indicators - only on hover with multiple images */}
+        {/* Dot indicators */}
         {hovered && allImages.length > 1 && (
           <div style={{
             position: 'absolute',
@@ -212,7 +229,8 @@ export default function ProductCard({ product }: Props) {
             backgroundColor: 'rgba(255,255,255,0.7)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            zIndex: 3,
           }}>
             <span style={{
               backgroundColor: '#111',
@@ -239,7 +257,7 @@ export default function ProductCard({ product }: Props) {
             fontWeight: '600',
             padding: '4px 8px',
             borderRadius: '4px',
-            zIndex: 1,
+            zIndex: 3,
           }}>
             {product.tag}
           </span>
@@ -325,4 +343,9 @@ export default function ProductCard({ product }: Props) {
       </div>
     </div>
   );
+}
+
+function getImageUrl(url: string, width: number = 400) {
+  if (!url) return '';
+  return url.includes('?') ? `${url}&width=${width}` : `${url}?width=${width}`;
 }

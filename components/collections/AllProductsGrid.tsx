@@ -104,8 +104,8 @@ export default function AllProductsGrid() {
 
   return (
     <div className="product-grid">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {products.map((product, i) => (
+        <ProductCard key={product.id} product={product} priority={i < 4} />
       ))}
     </div>
   );
