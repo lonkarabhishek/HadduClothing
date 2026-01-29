@@ -223,7 +223,8 @@ function getColorStyle(colorName: string): { bg: string; border: string; text: s
     offwhite:       { bg: '#f5f0e8', border: '#d9d0c0', text: '#555' },
     red:            { bg: '#d94040', border: '#c03030', text: '#fff' },
     blue:           { bg: '#4a7ab5', border: '#3a6aa0', text: '#fff' },
-    childblue:      { bg: '#7eaed4', border: '#5e94be', text: '#fff' },
+    childblue:      { bg: '#9cf1f8', border: '#7ad9e0', text: '#444' },
+    softcyan:       { bg: '#9cf1f8', border: '#7ad9e0', text: '#444' },
     skyblue:        { bg: '#7ec8e3', border: '#5ab0d0', text: '#fff' },
     navyblue:       { bg: '#2c3e6b', border: '#1e2e55', text: '#fff' },
     navy:           { bg: '#2c3e6b', border: '#1e2e55', text: '#fff' },
@@ -704,19 +705,60 @@ export default function ProductDetail({ product }: Props) {
               )}
             </button>
 
-            {/* Trust Badges */}
-            <div className="grid grid-cols-3 gap-3 pt-4">
-              <div className="trust-icon">
-                <Truck size={18} />
-                <span>Free Shipping</span>
+            {/* Trust Badges - Horizontal */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '12px',
+              paddingTop: '12px',
+              marginTop: '0'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: '#f0fdf4',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <Truck size={16} color="#16a34a" />
+                </div>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: '#444' }}>Free Shipping</p>
               </div>
-              <div className="trust-icon">
-                <RotateCcw size={18} />
-                <span>Easy Returns</span>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: '#fef3c7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <RotateCcw size={16} color="#d97706" />
+                </div>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: '#444' }}>Easy Returns</p>
               </div>
-              <div className="trust-icon">
-                <Shield size={18} />
-                <span>Secure Pay</span>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: '#ede9fe',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <Shield size={16} color="#7c3aed" />
+                </div>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: '#444' }}>Secure Pay</p>
               </div>
             </div>
 

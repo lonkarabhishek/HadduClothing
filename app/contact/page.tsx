@@ -9,26 +9,21 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
-      {/* Header Banner */}
+      {/* Header Banner - reduced padding */}
       <div style={{
         backgroundColor: '#3f5046',
         color: 'white',
-        padding: '60px 24px 64px',
+        padding: '20px 24px 24px',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        <div style={{ position: 'absolute', top: '-40px', left: '-40px', width: '150px', height: '150px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '-30px', right: '-30px', width: '120px', height: '120px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
-        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>
+        <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
           Get In Touch
         </p>
-        <h1 style={{ fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: '600', marginBottom: '12px', letterSpacing: '-0.02em' }}>
+        <h1 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: '600', letterSpacing: '-0.02em' }}>
           Contact Us
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', maxWidth: '400px', margin: '0 auto' }}>
-          We&apos;re here to help
-        </p>
       </div>
 
       {/* Content */}
