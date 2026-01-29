@@ -112,7 +112,7 @@ export default function CartSlideOver() {
 
       {/* Cart Panel */}
       <div
-        className={`fixed right-0 top-0 h-full w-full sm:w-[420px] z-[60] flex flex-col transform transition-transform duration-300 ease-out ${
+        className={`fixed right-0 top-0 h-full w-[85%] sm:w-[420px] z-[60] flex flex-col transform transition-transform duration-300 ease-out rounded-l-2xl sm:rounded-none ${
           isCartOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ backgroundColor: '#f5f5f5' }}
