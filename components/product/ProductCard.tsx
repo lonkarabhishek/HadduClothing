@@ -109,6 +109,9 @@ export default function ProductCard({ product, priority = false }: Props) {
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
         borderRadius: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
       }}
     >
       {/* IMAGE with carousel */}
@@ -289,7 +292,7 @@ export default function ProductCard({ product, priority = false }: Props) {
       </Link>
 
       {/* INFO */}
-      <div style={{ marginTop: '12px' }}>
+      <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <Link href={product.href}>
           <h3
             className="text-[14px] font-medium line-clamp-2 leading-snug"
@@ -347,7 +350,8 @@ export default function ProductCard({ product, priority = false }: Props) {
             onClick={handleAddToCart}
             disabled={isLoading}
             style={{
-              marginTop: '10px',
+              marginTop: 'auto',
+              paddingTop: '10px',
               width: '100%',
               height: '36px',
               backgroundColor: added ? '#16a34a' : '#3f5046',
@@ -376,7 +380,8 @@ export default function ProductCard({ product, priority = false }: Props) {
         ) : (
           <div
             style={{
-              marginTop: '10px',
+              marginTop: 'auto',
+              paddingTop: '10px',
               width: '100%',
               height: '36px',
               backgroundColor: '#e5e5e5',
