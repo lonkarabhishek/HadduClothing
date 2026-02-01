@@ -37,7 +37,7 @@ const CartContext = createContext<CartContextType | null>(null);
 const CART_ID_KEY = "haddu_cart_id";
 
 // Shipping constants
-export const FREE_SHIPPING_THRESHOLD = 1999;
+export const FREE_SHIPPING_THRESHOLD = 999;
 export const SHIPPING_CHARGE = 45;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {

@@ -68,8 +68,13 @@ export default function CartSlideOver() {
   }, [isCartOpen, items]);
 
   const handleCheckout = () => {
-    const checkoutUrl = getCheckoutUrl();
+    let checkoutUrl = getCheckoutUrl();
     if (checkoutUrl) {
+      // Replace Shopify domain with custom checkout domain
+      checkoutUrl = checkoutUrl.replace(
+        /https:\/\/[^\/]*\.myshopify\.com/,
+        'https://checkout.hadduclothing.com'
+      );
       window.location.href = checkoutUrl;
     }
   };

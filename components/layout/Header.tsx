@@ -66,7 +66,7 @@ export default function Header() {
       {/* Announcement Bar */}
       {bannerVisible && (
         <div className="bg-[#3f5046] text-white py-2.5 px-4 text-center text-xs md:text-sm font-medium tracking-wide relative">
-          <span>FREE SHIPPING ON ORDERS ABOVE ₹1,999</span>
+          <span>FREE SHIPPING ON ORDERS ABOVE ₹999</span>
           <button
             onClick={dismissBanner}
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
@@ -78,7 +78,7 @@ export default function Header() {
       )}
 
       {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 md:py-5">
+      <header className="sticky top-0 z-50 bg-white py-4 md:py-5">
         <div className="container px-4">
           <div className="grid grid-cols-3 items-center">
 
