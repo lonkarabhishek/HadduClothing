@@ -219,14 +219,14 @@ export default function AllProductsGrid() {
 
           {/* Banner Image - on right, spans 2 columns */}
           <div
-            className="col-span-2 row-span-1 md:row-span-2 rounded-xl overflow-hidden order-first md:order-last"
+            className="col-span-2 rounded-xl overflow-hidden order-first md:order-last"
             style={{
               position: 'relative',
               background: '#fafafa'
             }}
           >
             <img
-              src="/bottomimages.png"
+              src="/image copy.png"
               alt="Haddu Clothing - Premium Streetwear"
               style={{
                 width: '100%',
@@ -237,53 +237,13 @@ export default function AllProductsGrid() {
                 minHeight: '200px'
               }}
             />
-            {/* Fade overlay on all borders */}
+            {/* Subtle fade on all borders */}
             <div style={{
               position: 'absolute',
               inset: 0,
-              boxShadow: 'inset 0 0 50px 30px rgba(250,250,250,0.7)',
+              boxShadow: 'inset 0 0 8px 4px rgba(250,250,250,0.6)',
               pointerEvents: 'none',
               borderRadius: '12px'
-            }} />
-            {/* Top fade */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '40px',
-              background: 'linear-gradient(to bottom, rgba(250,250,250,0.6) 0%, transparent 100%)',
-              pointerEvents: 'none'
-            }} />
-            {/* Bottom fade */}
-            <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '40px',
-              background: 'linear-gradient(to top, rgba(250,250,250,0.6) 0%, transparent 100%)',
-              pointerEvents: 'none'
-            }} />
-            {/* Left fade */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              width: '40px',
-              background: 'linear-gradient(to right, rgba(250,250,250,0.6) 0%, transparent 100%)',
-              pointerEvents: 'none'
-            }} />
-            {/* Right fade */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: '40px',
-              background: 'linear-gradient(to left, rgba(250,250,250,0.6) 0%, transparent 100%)',
-              pointerEvents: 'none'
             }} />
           </div>
         </div>
