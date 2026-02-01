@@ -16,7 +16,7 @@ function getColorHex(colorName: string): string {
     softcyan: '#9cf1f8', skyblue: '#7ec8e3',
     navyblue: '#2c3e6b', navy: '#2c3e6b',
     green: '#5a8a5a', mintgreen: '#8bc5a7', litemintgreen: '#a0d6b8',
-    olivegreen: '#6b7a4a', grey: '#8a8a8a', gray: '#8a8a8a',
+    olivegreen: '#6b7a4a', grey: '#b7b1b0', gray: '#b7b1b0',
     charcoal: '#555', maroon: '#7a3040', brown: '#8a6a4a',
     beige: '#d4c5a0', pink: '#d98aa0', purple: '#7a5a90',
     yellow: '#d4c040', orange: '#d48a40', cream: '#f0e8d0',
