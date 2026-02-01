@@ -65,15 +65,42 @@ export default function Header() {
     <>
       {/* Announcement Bar */}
       {bannerVisible && (
-        <div className="bg-[#3f5046] text-white py-2.5 px-4 text-center text-xs md:text-sm font-medium tracking-wide relative">
-          <span>FREE SHIPPING ON ORDERS ABOVE ₹999</span>
+        <div className="bg-[#3f5046] text-white py-2.5 text-xs md:text-sm font-medium tracking-wide relative overflow-hidden">
+          <div className="flex">
+            <div
+              className="whitespace-nowrap flex-shrink-0"
+              style={{
+                animation: 'marquee 20s linear infinite',
+              }}
+            >
+              <span style={{ marginRight: '48px' }}>FREE SHIPPING ON ORDERS ABOVE ₹999 ✦</span>
+              <span style={{ marginRight: '48px' }}>PREMIUM QUALITY STREETWEAR ✦</span>
+              <span style={{ marginRight: '48px' }}>EASY RETURNS & EXCHANGES ✦</span>
+            </div>
+            <div
+              className="whitespace-nowrap flex-shrink-0"
+              style={{
+                animation: 'marquee 20s linear infinite',
+              }}
+            >
+              <span style={{ marginRight: '48px' }}>FREE SHIPPING ON ORDERS ABOVE ₹999 ✦</span>
+              <span style={{ marginRight: '48px' }}>PREMIUM QUALITY STREETWEAR ✦</span>
+              <span style={{ marginRight: '48px' }}>EASY RETURNS & EXCHANGES ✦</span>
+            </div>
+          </div>
           <button
             onClick={dismissBanner}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors z-10 bg-[#3f5046]"
             aria-label="Dismiss banner"
           >
             <X size={16} />
           </button>
+          <style jsx>{`
+            @keyframes marquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-100%); }
+            }
+          `}</style>
         </div>
       )}
 
