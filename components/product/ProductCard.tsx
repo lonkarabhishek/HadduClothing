@@ -2,9 +2,33 @@
 
 import Link from "next/link";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { Product } from "./types";
 import { useCart } from "@/app/context/CartContext";
+
+// Color mapping for swatches
+function getColorHex(colorName: string): string {
+  const name = colorName.toLowerCase().replace(/\s+/g, '');
+  const map: Record<string, string> = {
+    black: '#333', deepblack: '#333', carbonblack: '#3a3a3a',
+    white: '#f0f0f0', offwhite: '#f5f0e8',
+    red: '#d94040', blue: '#4a7ab5', childblue: '#9cf1f8',
+    softcyan: '#9cf1f8', skyblue: '#7ec8e3',
+    navyblue: '#2c3e6b', navy: '#2c3e6b',
+    green: '#5a8a5a', mintgreen: '#8bc5a7', litemintgreen: '#a0d6b8',
+    olivegreen: '#6b7a4a', grey: '#8a8a8a', gray: '#8a8a8a',
+    charcoal: '#555', maroon: '#7a3040', brown: '#8a6a4a',
+    beige: '#d4c5a0', pink: '#d98aa0', purple: '#7a5a90',
+    yellow: '#d4c040', orange: '#d48a40', cream: '#f0e8d0',
+    lavender: '#a090c0', teal: '#508080',
+    arcticsky: '#a0c8e0', arcticskyblue: '#a0c8e0',
+  };
+  if (map[name]) return map[name];
+  for (const key of Object.keys(map)) {
+    if (name.includes(key) || key.includes(name)) return map[key];
+  }
+  return '#3f5046';
+}
 
 type Props = {
   product: Product;
@@ -75,7 +99,7 @@ export default function ProductCard({ product, priority = false }: Props) {
 
   return (
     <div
-      className="group flex flex-col h-full"
+      className="group"
       onMouseEnter={() => {
         setHovered(true);
         if (allImages.length > 1) setCurrentImage(1);
@@ -265,15 +289,40 @@ export default function ProductCard({ product, priority = false }: Props) {
       </Link>
 
       {/* INFO */}
-      <div className="mt-3 flex flex-col flex-grow">
-        <Link href={product.href} className="flex-grow">
-          <h3 className="text-[14px] font-medium line-clamp-2 leading-tight min-h-[40px]">
+      <div style={{ marginTop: '12px' }}>
+        <Link href={product.href}>
+          <h3 className="text-[14px] font-medium line-clamp-2 leading-snug">
             {product.title}
           </h3>
         </Link>
 
+        {/* Color Swatches */}
+        {product.colors && product.colors.length > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+            {product.colors.slice(0, 5).map((color) => (
+              <span
+                key={color}
+                title={color}
+                style={{
+                  width: '14px',
+                  height: '14px',
+                  borderRadius: '50%',
+                  backgroundColor: getColorHex(color),
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+            {product.colors.length > 5 && (
+              <span style={{ fontSize: '11px', color: '#666' }}>
+                +{product.colors.length - 5}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Price Row */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
           <span style={{ fontSize: '16px', fontWeight: '700', color: isOutOfStock ? '#999' : '#111' }}>
             ₹{Math.round(price).toLocaleString("en-IN")}
           </span>

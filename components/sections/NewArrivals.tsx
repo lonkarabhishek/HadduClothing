@@ -8,6 +8,27 @@ import { shopifyFetch } from "@/lib/shopify";
 import { LATEST_PRODUCTS_QUERY } from "@/lib/queries";
 import { mockProducts } from "@/lib/mockData";
 
+// Helper to check if product belongs to kids collection
+function isKidsProduct(node: any): boolean {
+  const tags = node.tags || [];
+  const hasKidsTag = tags.some((tag: string) =>
+    tag.toLowerCase().includes('kid') ||
+    tag.toLowerCase().includes('children') ||
+    tag.toLowerCase().includes('child')
+  );
+
+  const collections = node.collections?.nodes || [];
+  const inKidsCollection = collections.some((col: any) =>
+    col.handle === 'kids-collection' ||
+    col.handle?.toLowerCase().includes('kid') ||
+    col.title?.toLowerCase().includes('kid') ||
+    col.handle?.toLowerCase().includes('children') ||
+    col.title?.toLowerCase().includes('children')
+  );
+
+  return hasKidsTag || inKidsCollection;
+}
+
 export default function NewArrivals() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +36,8 @@ export default function NewArrivals() {
   useEffect(() => {
     async function fetchLatestProducts() {
       try {
-        const res = await shopifyFetch(LATEST_PRODUCTS_QUERY, { first: 8 });
+        // Fetch more to account for kids products being filtered out
+        const res = await shopifyFetch(LATEST_PRODUCTS_QUERY, { first: 16 });
 
         if (!res) {
           // Use mock data if Shopify not configured
@@ -27,9 +49,17 @@ export default function NewArrivals() {
           return;
         }
 
-        const formattedProducts: Product[] = res.data.products.nodes.map((node: any) => {
+        // Filter out kids products and limit to 8
+        const filteredNodes = res.data.products.nodes
+          .filter((node: any) => !isKidsProduct(node))
+          .slice(0, 8);
+
+        const formattedProducts: Product[] = filteredNodes.map((node: any) => {
           const sizes: string[] = node.options?.find(
             (opt: any) => opt.name === "Size"
+          )?.values || [];
+          const colors: string[] = node.options?.find(
+            (opt: any) => opt.name.toLowerCase() === "color"
           )?.values || [];
 
           const firstVariant = node.variants?.nodes?.[0];
@@ -51,6 +81,7 @@ export default function NewArrivals() {
               ? `${Math.round(((Number(comparePrice) - price) / Number(comparePrice)) * 100)}% OFF`
               : undefined,
             sizes,
+            colors,
             href: `/products/${node.handle}`,
             variantId: firstVariant?.id,
             availableForSale: firstVariant?.availableForSale ?? true,

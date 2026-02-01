@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Minus, Plus, Check, Truck, RotateCcw, Shield } from "lucide-react";
 import { useCart } from "@/app/context/CartContext";
 import SizeGuide from "./SizeGuide";
@@ -10,7 +11,7 @@ import ProductCard from "./ProductCard";
 import type { ProductDetail as ProductDetailType, Product } from "@/lib/types";
 import shopifyImageLoader from "@/lib/shopifyImageLoader";
 import { shopifyFetch } from "@/lib/shopify";
-import { PRODUCTS_QUERY } from "@/lib/queries";
+import { PRODUCTS_QUERY, COLLECTION_BY_HANDLE_QUERY } from "@/lib/queries";
 
 type Props = {
   product: ProductDetailType;
@@ -186,10 +187,10 @@ function ProductDescription({ descriptionHtml, description }: { descriptionHtml?
           </svg>
         }
         title="Free Shipping"
-        subtitle="We offer free shipping across India"
+        subtitle="Free on orders above ₹1,999"
       >
         <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.7' }}>
-          Enjoy free shipping on all orders across India. Orders are processed within 1-2 business days and typically delivered in 5-7 business days.
+          Enjoy free shipping on orders above ₹1,999 across India. For orders below ₹1,999, a flat shipping fee of ₹45 applies. Orders are processed within 1-2 business days and typically delivered in 5-7 business days.
         </p>
       </AccordionItem>
 
@@ -257,7 +258,7 @@ function getColorStyle(colorName: string): { bg: string; border: string; text: s
   return { bg: '#3f5046', border: '#354538', text: '#fff' };
 }
 
-// Size mapping with inches
+// Size mapping with inches - Adults
 const SIZE_INCHES: Record<string, string> = {
   "XS": "32-34\"",
   "S": "34-36\"",
@@ -267,6 +268,15 @@ const SIZE_INCHES: Record<string, string> = {
   "XXL": "44-46\"",
   "2XL": "44-46\"",
   "3XL": "46-48\"",
+};
+
+// Size mapping for Kids
+const KIDS_SIZE_INCHES: Record<string, string> = {
+  "S": "3-4 yrs",
+  "M": "5-6 yrs",
+  "L": "7-8 yrs",
+  "XL": "9-10 yrs",
+  "XXL": "11-12 yrs",
 };
 
 // Transform raw Shopify product to Product type for cards
@@ -287,6 +297,7 @@ function transformProductForCard(node: any): Product {
 
   const firstVariant = node.variants?.nodes?.[0];
   const sizes = node.options?.find((o: any) => o.name.toLowerCase() === "size")?.values || [];
+  const colors = node.options?.find((o: any) => o.name.toLowerCase() === "color")?.values || [];
 
   return {
     id: node.id,
@@ -300,6 +311,7 @@ function transformProductForCard(node: any): Product {
     originalPrice: hasDiscount ? compareAt : undefined,
     discount: hasDiscount ? `${discountPercent}% OFF` : undefined,
     sizes,
+    colors,
     href: `/products/${node.handle}`,
     variantId: firstVariant?.id,
     availableForSale: firstVariant?.availableForSale ?? true,
@@ -308,7 +320,26 @@ function transformProductForCard(node: any): Product {
 
 export default function ProductDetail({ product }: Props) {
   const { addToCart, isLoading } = useCart();
+  const searchParams = useSearchParams();
+  const colorFromUrl = searchParams.get("color");
+
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
+    // If color is specified in URL, try to find a variant with that color
+    if (colorFromUrl) {
+      const variantWithColor = product.variants.find(
+        (v) => v.availableForSale &&
+          v.selectedOptions.some(
+            (opt) => opt.name.toLowerCase() === "color" && opt.value === colorFromUrl
+          )
+      );
+      if (variantWithColor) {
+        return Object.fromEntries(
+          variantWithColor.selectedOptions.map((opt) => [opt.name, opt.value])
+        );
+      }
+    }
+
+    // Default: find first available variant
     const firstAvailable = product.variants.find((v) => v.availableForSale);
     if (firstAvailable) {
       return Object.fromEntries(
@@ -321,29 +352,105 @@ export default function ProductDetail({ product }: Props) {
   });
 
   const [quantity, setQuantity] = useState(1);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(() => {
+    // If color is specified in URL, find the matching image
+    if (colorFromUrl) {
+      const variantWithColor = product.variants.find(
+        (v) => v.selectedOptions.some(
+          (opt) => opt.name.toLowerCase() === "color" && opt.value === colorFromUrl
+        ) && v.image?.url
+      );
+      if (variantWithColor?.image?.url) {
+        const imageIndex = product.images.findIndex(
+          (img) => img.url === variantWithColor.image?.url
+        );
+        if (imageIndex !== -1) return imageIndex;
+      }
+    }
+    return 0;
+  });
   const [isAdding, setIsAdding] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
+  const [collectionProducts, setCollectionProducts] = useState<Product[]>([]);
+  const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
+  const [activeCollection, setActiveCollection] = useState<{ handle: string; title: string } | null>(null);
 
-  // Fetch similar products
+  // Get the primary collection (first non-kids collection, or first collection)
+  const primaryCollection = useMemo(() => {
+    if (!product.collections || product.collections.length === 0) return null;
+    // Prefer non-kids collection
+    const nonKids = product.collections.find(c =>
+      !c.handle.toLowerCase().includes('kid') &&
+      !c.title.toLowerCase().includes('kid')
+    );
+    return nonKids || product.collections[0];
+  }, [product.collections]);
+
+  // Fetch products from the same collection
   useEffect(() => {
-    async function fetchSimilarProducts() {
+    async function fetchCollectionProducts() {
       try {
+        if (primaryCollection) {
+          setActiveCollection({ handle: primaryCollection.handle, title: primaryCollection.title });
+          const res = await shopifyFetch(COLLECTION_BY_HANDLE_QUERY, {
+            handle: primaryCollection.handle,
+            first: 8
+          });
+          if (res?.data?.collection?.products?.nodes) {
+            const transformed = res.data.collection.products.nodes
+              .filter((p: any) => p.handle !== product.handle)
+              .slice(0, 4)
+              .map(transformProductForCard);
+            setCollectionProducts(transformed);
+            return;
+          }
+        }
+        // Fallback to general products if no collection
         const res = await shopifyFetch(PRODUCTS_QUERY, { first: 8 });
         if (res?.data?.products?.nodes) {
           const transformed = res.data.products.nodes
             .filter((p: any) => p.handle !== product.handle)
             .slice(0, 4)
             .map(transformProductForCard);
-          setSimilarProducts(transformed);
+          setCollectionProducts(transformed);
         }
       } catch (error) {
-        console.error("Error fetching similar products:", error);
+        console.error("Error fetching collection products:", error);
       }
     }
-    fetchSimilarProducts();
-  }, [product.handle]);
+    fetchCollectionProducts();
+  }, [product.handle, primaryCollection]);
+
+  // Fetch "You May Also Like" products (random products not in the same collection)
+  useEffect(() => {
+    async function fetchSuggestedProducts() {
+      try {
+        const res = await shopifyFetch(PRODUCTS_QUERY, { first: 20 });
+        if (res?.data?.products?.nodes) {
+          // Filter out current product and collection products
+          const collectionHandles = collectionProducts.map(p => p.handle);
+          const filtered = res.data.products.nodes
+            .filter((p: any) =>
+              p.handle !== product.handle &&
+              !collectionHandles.includes(p.handle) &&
+              // Also filter out kids products for non-kids products
+              !p.collections?.nodes?.some((c: any) =>
+                c.handle?.toLowerCase().includes('kid')
+              )
+            )
+            .slice(0, 4)
+            .map(transformProductForCard);
+          setSuggestedProducts(filtered);
+        }
+      } catch (error) {
+        console.error("Error fetching suggested products:", error);
+      }
+    }
+    // Only fetch after collection products are loaded
+    if (collectionProducts.length > 0 || !primaryCollection) {
+      fetchSuggestedProducts();
+    }
+  }, [product.handle, collectionProducts, primaryCollection]);
 
   const selectedVariant = useMemo(() => {
     return product.variants.find((variant) =>
@@ -366,6 +473,26 @@ export default function ProductDetail({ product }: Props) {
 
   const handleOptionChange = (optionName: string, value: string) => {
     setSelectedOptions((prev) => ({ ...prev, [optionName]: value }));
+
+    // If color option changed, find and show the matching variant image
+    if (optionName.toLowerCase() === "color") {
+      // Find a variant with this color that has an image
+      const variantWithImage = product.variants.find(
+        (v) => v.selectedOptions.some(
+          (opt) => opt.name.toLowerCase() === "color" && opt.value === value
+        ) && v.image?.url
+      );
+
+      if (variantWithImage?.image?.url) {
+        // Find the index of this image in the product images array
+        const imageIndex = product.images.findIndex(
+          (img) => img.url === variantWithImage.image?.url
+        );
+        if (imageIndex !== -1) {
+          setCurrentImageIndex(imageIndex);
+        }
+      }
+    }
   };
 
   const handleAddToCart = async () => {
@@ -609,8 +736,18 @@ export default function ProductDetail({ product }: Props) {
                     const isAvailable = isOptionAvailable(option.name, value);
                     const isSize = option.name.toLowerCase() === "size";
                     const isColor = option.name.toLowerCase() === "color";
-                    const sizeInches = SIZE_INCHES[value.toUpperCase()];
+                    // Check if this is a kids product
+                    const isKidsProduct = product.collections?.some(c =>
+                      c.handle.toLowerCase().includes('kid') ||
+                      c.title.toLowerCase().includes('kid')
+                    );
+                    const sizeInches = isKidsProduct
+                      ? KIDS_SIZE_INCHES[value.toUpperCase()]
+                      : SIZE_INCHES[value.toUpperCase()];
                     const colorStyle = isColor && isSelected ? getColorStyle(value) : null;
+
+                    // Get color swatch style for color options
+                    const swatchStyle = isColor ? getColorStyle(value) : null;
 
                     return (
                       <button
@@ -618,8 +755,8 @@ export default function ProductDetail({ product }: Props) {
                         onClick={() => handleOptionChange(option.name, value)}
                         disabled={!isAvailable}
                         style={{
-                          minWidth: '56px',
-                          padding: '10px 16px',
+                          minWidth: isColor ? '80px' : '56px',
+                          padding: isColor ? '8px 12px' : '10px 16px',
                           border: isSelected
                             ? `2px solid ${colorStyle ? colorStyle.border : '#3f5046'}`
                             : '1px solid #ddd',
@@ -636,12 +773,24 @@ export default function ProductDetail({ product }: Props) {
                           opacity: isAvailable ? 1 : 0.5,
                           textDecoration: !isAvailable ? 'line-through' : 'none',
                           display: 'flex',
-                          flexDirection: 'column',
+                          flexDirection: isColor ? 'row' : 'column',
                           alignItems: 'center',
-                          gap: '2px',
+                          gap: isColor ? '8px' : '2px',
                           transition: 'all 0.2s'
                         }}
                       >
+                        {/* Color swatch circle */}
+                        {isColor && swatchStyle && (
+                          <span style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            backgroundColor: swatchStyle.bg,
+                            border: `2px solid ${swatchStyle.border}`,
+                            flexShrink: 0,
+                            boxShadow: isSelected ? '0 0 0 2px white, 0 0 0 3px ' + swatchStyle.border : 'none'
+                          }} />
+                        )}
                         <span>{value}</span>
                         {isSize && sizeInches && (
                           <span style={{
@@ -771,20 +920,79 @@ export default function ProductDetail({ product }: Props) {
         </div>
       </div>
 
-      {/* Similar Products Section */}
-      {similarProducts.length > 0 && (
+      {/* Same Collection Products Section */}
+      {collectionProducts.length > 0 && (
         <section style={{ backgroundColor: '#fafafa', padding: '40px 0' }}>
           <div className="container">
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '600',
-              marginBottom: '24px',
-              color: '#111'
-            }}>
-              You May Also Like
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <h2 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#111'
+              }}>
+                {activeCollection ? `More from ${activeCollection.title}` : 'You May Also Like'}
+              </h2>
+              {activeCollection && (
+                <Link
+                  href={`/collections/${activeCollection.handle}`}
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#3f5046',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  View All
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              )}
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {similarProducts.map((p) => (
+              {collectionProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* You May Also Like Section */}
+      {suggestedProducts.length > 0 && (
+        <section style={{ backgroundColor: 'white', padding: '40px 0' }}>
+          <div className="container">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <h2 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#111'
+              }}>
+                You May Also Like
+              </h2>
+              <Link
+                href="/collections/all"
+                style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#3f5046',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                View All
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {suggestedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
@@ -874,7 +1082,14 @@ export default function ProductDetail({ product }: Props) {
       </div>
 
       {/* Size Guide Modal */}
-      <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
+      <SizeGuide
+        isOpen={showSizeGuide}
+        onClose={() => setShowSizeGuide(false)}
+        isKids={product.collections?.some(c =>
+          c.handle.toLowerCase().includes('kid') ||
+          c.title.toLowerCase().includes('kid')
+        ) || false}
+      />
     </>
   );
 }

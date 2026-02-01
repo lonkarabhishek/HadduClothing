@@ -26,13 +26,17 @@ const PRODUCT_CARD_FRAGMENT = `
         currencyCode
       }
     }
-    variants(first: 1) {
+    variants(first: 50) {
       nodes {
         id
         availableForSale
         selectedOptions {
           name
           value
+        }
+        image {
+          url
+          altText
         }
       }
     }
@@ -41,6 +45,12 @@ const PRODUCT_CARD_FRAGMENT = `
       values
     }
     tags
+    collections(first: 5) {
+      nodes {
+        handle
+        title
+      }
+    }
   }
 `;
 
@@ -251,6 +261,14 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             url
             altText
           }
+        }
+      }
+      collections(first: 5) {
+        nodes {
+          id
+          handle
+          title
+          description
         }
       }
     }

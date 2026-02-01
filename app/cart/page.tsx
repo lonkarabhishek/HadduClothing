@@ -3,13 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
-import { useCart, useCartItems, useCartTotals } from "@/app/context/CartContext";
+import { useCart, useCartItems, useCartTotals, FREE_SHIPPING_THRESHOLD } from "@/app/context/CartContext";
 import shopifyImageLoader from "@/lib/shopifyImageLoader";
 
 export default function CartPage() {
   const { updateQuantity, removeItem, isLoading, getCheckoutUrl } = useCart();
   const items = useCartItems();
-  const { totalQuantity, subtotal } = useCartTotals();
+  const { totalQuantity, subtotal, shipping, total, isFreeShipping, amountToFreeShipping } = useCartTotals();
 
   const formatPrice = (amount: number) => {
     return `₹${amount.toLocaleString("en-IN")}`;
@@ -134,6 +134,29 @@ export default function CartPage() {
           <div className="bg-gray-50 rounded-lg p-6 sticky top-24">
             <h2 className="text-lg font-bold mb-6">Order Summary</h2>
 
+            {/* Free Shipping Progress */}
+            {!isFreeShipping && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-amber-800 font-medium mb-2">
+                  Add {formatPrice(amountToFreeShipping)} more for <strong>FREE Shipping!</strong>
+                </p>
+                <div className="w-full h-2 bg-amber-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {isFreeShipping && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 text-center">
+                <span className="text-sm text-emerald-700 font-semibold">
+                  🎉 You&apos;ve unlocked FREE Shipping!
+                </span>
+              </div>
+            )}
+
             <div className="space-y-3 pb-4 border-b">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
@@ -141,13 +164,17 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span className="text-gray-500 text-sm">Calculated at checkout</span>
+                {isFreeShipping ? (
+                  <span className="text-emerald-600 font-medium">FREE</span>
+                ) : (
+                  <span className="font-semibold">{formatPrice(shipping)}</span>
+                )}
               </div>
             </div>
 
             <div className="flex justify-between py-4 border-b">
               <span className="font-bold">Total</span>
-              <span className="text-xl font-bold">{formatPrice(subtotal)}</span>
+              <span className="text-xl font-bold">{formatPrice(total)}</span>
             </div>
 
             <button
@@ -164,7 +191,7 @@ export default function CartPage() {
 
             {/* Trust */}
             <div className="mt-6 pt-4 border-t text-center text-xs text-gray-400">
-              Free Shipping • Easy Returns • Secure Payment
+              Free Shipping over ₹1,999 • Easy Returns • Secure Payment
             </div>
           </div>
         </div>

@@ -106,6 +106,7 @@ export type Product = {
   originalPrice?: number;
   discount?: string;
   sizes: string[];
+  colors?: string[];
   href: string;
   variantId?: string;
   availableForSale?: boolean;
@@ -137,4 +138,10 @@ export type ProductDetail = {
   }[];
   tags: string[];
   vendor: string;
+  collections?: {
+    id: string;
+    handle: string;
+    title: string;
+    description?: string;
+  }[];
 };

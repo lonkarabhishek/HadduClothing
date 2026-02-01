@@ -36,6 +36,10 @@ const CartContext = createContext<CartContextType | null>(null);
 
 const CART_ID_KEY = "haddu_cart_id";
 
+// Shipping constants
+export const FREE_SHIPPING_THRESHOLD = 1999;
+export const SHIPPING_CHARGE = 45;
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<ShopifyCart | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -244,7 +248,7 @@ export function useCart() {
   return context;
 }
 
-// Helper hook to get cart totals
+// Helper hook to get cart totals with shipping
 export function useCartTotals() {
   const { cart } = useCart();
 
@@ -253,15 +257,26 @@ export function useCartTotals() {
       return {
         totalQuantity: 0,
         subtotal: 0,
+        shipping: 0,
         total: 0,
+        isFreeShipping: true,
+        amountToFreeShipping: FREE_SHIPPING_THRESHOLD,
         currencyCode: "INR",
       };
     }
 
+    const subtotal = parseFloat(cart.cost.subtotalAmount.amount);
+    const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+    const shipping = isFreeShipping ? 0 : SHIPPING_CHARGE;
+    const amountToFreeShipping = isFreeShipping ? 0 : FREE_SHIPPING_THRESHOLD - subtotal;
+
     return {
       totalQuantity: cart.totalQuantity,
-      subtotal: parseFloat(cart.cost.subtotalAmount.amount),
-      total: parseFloat(cart.cost.totalAmount.amount),
+      subtotal,
+      shipping,
+      total: subtotal + shipping,
+      isFreeShipping,
+      amountToFreeShipping,
       currencyCode: cart.cost.totalAmount.currencyCode,
     };
   }, [cart]);

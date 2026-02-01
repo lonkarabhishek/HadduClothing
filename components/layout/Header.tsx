@@ -8,15 +8,16 @@ import { useCart, useCartTotals } from "@/app/context/CartContext";
 
 const NAV_LINKS = [
   { label: "Shop", href: "/collections/all" },
-  { label: "New", href: "/collections/all" },
+  { label: "Collections", href: "/collections" },
   { label: "About", href: "/about" },
 ];
 
 const MENU_CATEGORIES = [
   { label: "Shop All", href: "/collections/all" },
-  { label: "New Arrivals", href: "/collections/all" },
-  { label: "Hoodies", href: "/collections/all" },
-  { label: "T-Shirts", href: "/collections/all" },
+  { label: "Collections", href: "/collections" },
+  { label: "Kids", href: "/collections/kids-collection" },
+  { label: "Hoodies", href: "/collections/hoodies" },
+  { label: "T-Shirts", href: "/collections/t-shirts" },
   { label: "About Us", href: "/about" },
 ];
 
@@ -65,7 +66,7 @@ export default function Header() {
       {/* Announcement Bar */}
       {bannerVisible && (
         <div className="bg-[#3f5046] text-white py-2.5 px-4 text-center text-xs md:text-sm font-medium tracking-wide relative">
-          <span>FREE SHIPPING ON ORDERS ABOVE ₹999</span>
+          <span>FREE SHIPPING ON ORDERS ABOVE ₹1,999</span>
           <button
             onClick={dismissBanner}
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"

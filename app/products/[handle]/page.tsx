@@ -39,6 +39,12 @@ function transformProduct(product: any): ProductDetailType {
     options: product.options,
     tags: product.tags,
     vendor: product.vendor,
+    collections: product.collections?.nodes?.map((c: any) => ({
+      id: c.id,
+      handle: c.handle,
+      title: c.title,
+      description: c.description,
+    })) || [],
   };
 }
 

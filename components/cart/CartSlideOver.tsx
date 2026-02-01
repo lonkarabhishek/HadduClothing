@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { X, Minus, Plus, ShoppingBag, Trash2, Shield, RotateCcw } from "lucide-react";
-import { useCart, useCartItems, useCartTotals } from "@/app/context/CartContext";
+import { useCart, useCartItems, useCartTotals, FREE_SHIPPING_THRESHOLD } from "@/app/context/CartContext";
 import { shopifyFetch } from "@/lib/shopify";
 import { PRODUCT_VARIANTS_QUERY } from "@/lib/queries";
 import shopifyImageLoader from "@/lib/shopifyImageLoader";
@@ -21,7 +21,7 @@ type ProductVariants = {
 export default function CartSlideOver() {
   const { isCartOpen, closeCart, updateQuantity, updateVariant, removeItem, isLoading, getCheckoutUrl } = useCart();
   const items = useCartItems();
-  const { totalQuantity, subtotal } = useCartTotals();
+  const { totalQuantity, subtotal, shipping, total, isFreeShipping, amountToFreeShipping } = useCartTotals();
   const [productVariants, setProductVariants] = useState<Record<string, ProductVariants>>({});
 
   useEffect(() => {
@@ -390,6 +390,53 @@ export default function CartSlideOver() {
                 </span>
               </div>
 
+              {/* Free Shipping Progress Banner */}
+              {!isFreeShipping && (
+                <div style={{
+                  backgroundColor: '#fef3c7',
+                  border: '1px solid #fcd34d',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  marginBottom: '12px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '13px', color: '#92400e', fontWeight: '500' }}>
+                      Add {formatPrice(amountToFreeShipping)} more for <strong>FREE Shipping!</strong>
+                    </span>
+                  </div>
+                  <div style={{
+                    width: '100%',
+                    height: '6px',
+                    backgroundColor: '#fde68a',
+                    borderRadius: '3px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%`,
+                      height: '100%',
+                      backgroundColor: '#f59e0b',
+                      borderRadius: '3px',
+                      transition: 'width 0.3s ease'
+                    }} />
+                  </div>
+                </div>
+              )}
+
+              {isFreeShipping && (
+                <div style={{
+                  backgroundColor: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  marginBottom: '12px',
+                  textAlign: 'center'
+                }}>
+                  <span style={{ fontSize: '13px', color: '#065f46', fontWeight: '600' }}>
+                    🎉 You&apos;ve unlocked FREE Shipping!
+                  </span>
+                </div>
+              )}
+
               {/* Order Summary */}
               <div style={{
                 backgroundColor: 'white',
@@ -405,9 +452,17 @@ export default function CartSlideOver() {
                   <span style={{ fontSize: '14px', color: '#666' }}>Total MRP</span>
                   <span style={{ fontSize: '14px', color: '#111' }}>{formatPrice(subtotal)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span style={{ fontSize: '14px', color: '#666' }}>Shipping</span>
-                  <span style={{ fontSize: '14px', color: '#059669', fontWeight: '500' }}>FREE</span>
+                  {isFreeShipping ? (
+                    <span style={{ fontSize: '14px', color: '#059669', fontWeight: '500' }}>FREE</span>
+                  ) : (
+                    <span style={{ fontSize: '14px', color: '#111' }}>{formatPrice(shipping)}</span>
+                  )}
+                </div>
+                <div style={{ borderTop: '1px solid #e5e5e5', paddingTop: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#111' }}>Total</span>
+                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#111' }}>{formatPrice(total)}</span>
                 </div>
               </div>
 
@@ -441,8 +496,8 @@ export default function CartSlideOver() {
             gap: '16px'
           }}>
             <div>
-              <p style={{ fontSize: '12px', color: '#666' }}>Total</p>
-              <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#111' }}>{formatPrice(subtotal)}</p>
+              <p style={{ fontSize: '12px', color: '#666' }}>Total {!isFreeShipping && <span style={{ fontSize: '10px' }}>(incl. shipping)</span>}</p>
+              <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#111' }}>{formatPrice(total)}</p>
             </div>
             <button
               onClick={handleCheckout}
