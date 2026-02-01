@@ -118,6 +118,7 @@ export default function CollectionProductsGrid({ products }: Props) {
         originalPrice: hasDiscount ? Number(comparePrice) : undefined,
         discount: hasDiscount ? `${discountPercent}% OFF` : undefined,
         sizes,
+        colors: [], // Don't show color swatches on collection pages
         href: `/products/${node.handle}`,
         variantId: firstVariant?.id,
         availableForSale: firstVariant?.availableForSale ?? true,

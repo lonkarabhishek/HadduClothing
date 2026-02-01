@@ -291,12 +291,31 @@ export default function CategoriesSection() {
           </div>
         </div>
 
-        {/* Mobile scroll hint */}
+        {/* Mobile scroll hint with arrows */}
         <div className="md:hidden" style={{
           display: 'flex',
           justifyContent: 'center',
-          marginTop: '16px'
+          alignItems: 'center',
+          gap: '16px',
+          marginTop: '20px'
         }}>
+          <button
+            onClick={() => scroll('left')}
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              border: '1px solid #e5e5e5',
+              background: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+            }}
+          >
+            <ChevronLeft size={18} color="#333" />
+          </button>
           <span style={{
             fontSize: '12px',
             color: '#999',
@@ -305,8 +324,24 @@ export default function CategoriesSection() {
             gap: '4px'
           }}>
             Swipe to explore
-            <ChevronRight size={14} />
           </span>
+          <button
+            onClick={() => scroll('right')}
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              border: '1px solid #e5e5e5',
+              background: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+            }}
+          >
+            <ChevronRight size={18} color="#333" />
+          </button>
         </div>
       </div>
 

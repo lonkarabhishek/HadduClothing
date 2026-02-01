@@ -291,12 +291,15 @@ export default function ProductCard({ product, priority = false }: Props) {
       {/* INFO */}
       <div style={{ marginTop: '12px' }}>
         <Link href={product.href}>
-          <h3 className="text-[14px] font-medium line-clamp-2 leading-snug">
+          <h3
+            className="text-[14px] font-medium line-clamp-2 leading-snug"
+            style={{ minHeight: '38px' }}
+          >
             {product.title}
           </h3>
         </Link>
 
-        {/* Color Swatches */}
+        {/* Color Swatches - only show if colors exist */}
         {product.colors && product.colors.length > 1 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
             {product.colors.slice(0, 5).map((color) => (
@@ -322,7 +325,7 @@ export default function ProductCard({ product, priority = false }: Props) {
         )}
 
         {/* Price Row */}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '2px' }}>
           <span style={{ fontSize: '16px', fontWeight: '700', color: isOutOfStock ? '#999' : '#111' }}>
             ₹{Math.round(price).toLocaleString("en-IN")}
           </span>

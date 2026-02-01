@@ -16,8 +16,8 @@ const MENU_CATEGORIES = [
   { label: "Shop All", href: "/collections/all" },
   { label: "Collections", href: "/collections" },
   { label: "Kids", href: "/collections/kids-collection" },
-  { label: "Hoodies", href: "/collections/hoodies" },
-  { label: "T-Shirts", href: "/collections/t-shirts" },
+  { label: "Hoodies", href: "/products/type/hoodies" },
+  { label: "Oversized Tees", href: "/products/type/oversized-tees" },
   { label: "About Us", href: "/about" },
 ];
 

@@ -33,72 +33,24 @@ export default async function CollectionsPage() {
 
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
-      {/* Header */}
+      {/* Header - minimal */}
       <div style={{
         backgroundColor: '#3f5046',
         color: 'white',
-        padding: '40px 24px 48px',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden'
+        padding: '16px 24px',
+        textAlign: 'center'
       }}>
-        {/* Decorative elements */}
-        <div style={{
-          position: 'absolute',
-          top: '-20px',
-          left: '10%',
-          width: '120px',
-          height: '120px',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '50%'
-        }} />
-        <div style={{
-          position: 'absolute',
-          bottom: '-40px',
-          right: '15%',
-          width: '100px',
-          height: '100px',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '50%'
-        }} />
-
-        <p style={{
-          fontSize: '10px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.25em',
-          color: 'rgba(255,255,255,0.5)',
-          marginBottom: '8px'
-        }}>
-          Haddu Clothing
-        </p>
         <h1 style={{
-          fontSize: 'clamp(28px, 5vw, 40px)',
+          fontSize: '18px',
           fontWeight: '600',
-          letterSpacing: '-0.02em',
-          position: 'relative'
+          letterSpacing: '-0.01em'
         }}>
-          Our Collections
+          Explore Our Collections
         </h1>
-        <p style={{
-          fontSize: '15px',
-          color: 'rgba(255,255,255,0.7)',
-          marginTop: '12px',
-          maxWidth: '500px',
-          marginLeft: 'auto',
-          marginRight: 'auto'
-        }}>
-          Discover our curated collections of premium streetwear
-        </p>
-        <div style={{
-          width: '40px',
-          height: '2px',
-          backgroundColor: 'rgba(255,255,255,0.3)',
-          margin: '20px auto 0'
-        }} />
       </div>
 
       {/* Collections Grid */}
-      <div className="container" style={{ padding: '40px 16px 80px' }}>
+      <div className="container" style={{ padding: '24px 16px 60px' }}>
         {visibleCollections.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <p style={{ color: '#666', fontSize: '16px' }}>No collections available yet.</p>

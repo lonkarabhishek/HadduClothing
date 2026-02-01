@@ -81,7 +81,7 @@ export default function NewArrivals() {
               ? `${Math.round(((Number(comparePrice) - price) / Number(comparePrice)) * 100)}% OFF`
               : undefined,
             sizes,
-            colors,
+            colors: [], // Don't show color swatches
             href: `/products/${node.handle}`,
             variantId: firstVariant?.id,
             availableForSale: firstVariant?.availableForSale ?? true,

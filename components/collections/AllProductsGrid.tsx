@@ -130,7 +130,7 @@ export default function AllProductsGrid() {
                 ? `${Math.round(((Number(comparePrice) - price) / Number(comparePrice)) * 100)}% OFF`
                 : undefined,
               sizes,
-              colors,
+              colors: [], // Don't show color swatches on product list
               href: `/products/${node.handle}`,
               variantId: firstVariant?.id,
               availableForSale: firstVariant?.availableForSale ?? true,
@@ -188,54 +188,173 @@ export default function AllProductsGrid() {
 
   return (
     <>
+      {/* Main products grid (all except last 2) */}
       <div className="product-grid">
-        {products.map((product, i) => (
+        {products.slice(0, -2).map((product, i) => (
           <ProductCard key={product.id} product={product} priority={i < 4} />
         ))}
       </div>
+
+      {/* Banner + Last 2 Products Row */}
+      {products.length >= 2 && (
+        <>
+          {/* Visual separator */}
+          <div style={{
+            marginTop: '48px',
+            marginBottom: '32px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px'
+          }}>
+            <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e5e5' }} />
+            <span style={{ fontSize: '12px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '500' }}>Featured</span>
+            <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e5e5' }} />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-7">
+          {/* Last 2 Products - on left */}
+          {products.slice(-2).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+
+          {/* Banner Image - on right, spans 2 columns */}
+          <div
+            className="col-span-2 row-span-1 md:row-span-2 rounded-xl overflow-hidden order-first md:order-last"
+            style={{
+              position: 'relative',
+              background: '#fafafa'
+            }}
+          >
+            <img
+              src="/image.png"
+              alt="Haddu Clothing - Premium Streetwear"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+                display: 'block',
+                minHeight: '200px'
+              }}
+            />
+            {/* Fade overlay on all borders */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              boxShadow: 'inset 0 0 40px 20px rgba(250,250,250,0.6)',
+              pointerEvents: 'none',
+              borderRadius: '12px'
+            }} />
+          </div>
+        </div>
+        </>
+      )}
 
       {/* Kids Collection Bottom Nudge */}
       {hasKidsCollection && (
         <div style={{
           marginTop: '48px',
-          textAlign: 'center',
-          padding: '32px 20px',
+          padding: '40px 24px',
           backgroundColor: '#fefce8',
-          borderRadius: '12px',
-          border: '1px solid #fef08a'
+          borderRadius: '16px',
+          border: '1px solid #fef08a',
+          position: 'relative',
+          overflow: 'hidden'
         }}>
-          <p style={{ fontSize: '14px', color: '#854d0e', marginBottom: '12px' }}>
-            Looking for something for the little ones?
-          </p>
-          <Link
-            href="/collections/kids-collection"
-            style={{
+          {/* Decorative elements */}
+          <div style={{
+            position: 'absolute',
+            top: '-20px',
+            left: '-20px',
+            width: '100px',
+            height: '100px',
+            backgroundColor: '#fef08a',
+            borderRadius: '50%',
+            opacity: 0.4
+          }} />
+          <div style={{
+            position: 'absolute',
+            bottom: '-30px',
+            right: '-30px',
+            width: '120px',
+            height: '120px',
+            backgroundColor: '#fde047',
+            borderRadius: '50%',
+            opacity: 0.3
+          }} />
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            right: '40px',
+            fontSize: '40px',
+            opacity: 0.2
+          }}>⭐</div>
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '30px',
+            fontSize: '30px',
+            opacity: 0.2
+          }}>🎈</div>
+
+          {/* Content */}
+          <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+            <div style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              backgroundColor: '#3f5046',
-              color: 'white',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontWeight: '600',
+              padding: '6px 14px',
+              backgroundColor: '#fbbf24',
+              borderRadius: '20px',
+              marginBottom: '16px'
+            }}>
+              <span style={{ fontSize: '16px' }}>👶</span>
+              <span style={{ fontSize: '12px', fontWeight: '600', color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Kids Collection</span>
+            </div>
+
+            <h3 style={{
+              fontSize: '22px',
+              fontWeight: '700',
+              color: '#78350f',
+              marginBottom: '8px'
+            }}>
+              For the Little Ones
+            </h3>
+            <p style={{
               fontSize: '14px',
-              textDecoration: 'none'
-            }}
-          >
-            Explore Kids Collection
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Link>
+              color: '#92400e',
+              marginBottom: '20px',
+              maxWidth: '300px',
+              margin: '0 auto 20px'
+            }}>
+              Cute & comfy styles designed for your kids. Same premium quality, sized just right!
+            </p>
+
+            <Link
+              href="/collections/kids-collection"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: '#78350f',
+                color: 'white',
+                padding: '14px 28px',
+                borderRadius: '10px',
+                fontWeight: '600',
+                fontSize: '14px',
+                textDecoration: 'none',
+                boxShadow: '0 4px 14px rgba(120, 53, 15, 0.3)',
+                transition: 'transform 0.2s, box-shadow 0.2s'
+              }}
+            >
+              Shop Kids Collection
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
         </div>
       )}
-
-      <style>{`
-        .kids-banner:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(251, 191, 36, 0.3);
-        }
-      `}</style>
     </>
   );
 }

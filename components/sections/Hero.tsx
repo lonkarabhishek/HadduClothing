@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { shopifyFetch } from "@/lib/shopify";
 import { PRODUCTS_QUERY } from "@/lib/queries";
@@ -21,6 +21,13 @@ type HeroSlide = {
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
   const [slides, setSlides] = useState<HeroSlide[]>([
     {
       badge: "Haddu Clothing",
@@ -170,10 +177,39 @@ export default function Hero() {
   const nextSlide = () => goToSlide((currentSlide + 1) % slides.length);
   const prevSlide = () => goToSlide((currentSlide - 1 + slides.length) % slides.length);
 
+  // Touch handlers for swipe
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
   const currentContent = slides[currentSlide];
 
   return (
-    <section className="relative h-[70vh] md:h-[85vh] overflow-hidden bg-[#0a0a0a]">
+    <section
+      ref={sectionRef}
+      className="relative h-[70vh] md:h-[85vh] overflow-hidden bg-[#0a0a0a]"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Background Images */}
       {slides.map((slide, index) => (
         <div
