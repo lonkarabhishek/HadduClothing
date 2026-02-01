@@ -226,7 +226,7 @@ export default function AllProductsGrid() {
             }}
           >
             <img
-              src="/image.png"
+              src="/bottomimages.png"
               alt="Haddu Clothing - Premium Streetwear"
               style={{
                 width: '100%',
@@ -241,9 +241,49 @@ export default function AllProductsGrid() {
             <div style={{
               position: 'absolute',
               inset: 0,
-              boxShadow: 'inset 0 0 40px 20px rgba(250,250,250,0.6)',
+              boxShadow: 'inset 0 0 50px 30px rgba(250,250,250,0.7)',
               pointerEvents: 'none',
               borderRadius: '12px'
+            }} />
+            {/* Top fade */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '40px',
+              background: 'linear-gradient(to bottom, rgba(250,250,250,0.6) 0%, transparent 100%)',
+              pointerEvents: 'none'
+            }} />
+            {/* Bottom fade */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '40px',
+              background: 'linear-gradient(to top, rgba(250,250,250,0.6) 0%, transparent 100%)',
+              pointerEvents: 'none'
+            }} />
+            {/* Left fade */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: '40px',
+              background: 'linear-gradient(to right, rgba(250,250,250,0.6) 0%, transparent 100%)',
+              pointerEvents: 'none'
+            }} />
+            {/* Right fade */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: '40px',
+              background: 'linear-gradient(to left, rgba(250,250,250,0.6) 0%, transparent 100%)',
+              pointerEvents: 'none'
             }} />
           </div>
         </div>
