@@ -73,9 +73,9 @@ export default function Header() {
                 animation: 'marquee 20s linear infinite',
               }}
             >
-              <span style={{ marginRight: '48px' }}>FREE SHIPPING ON ORDERS ABOVE ₹999 ✦</span>
-              <span style={{ marginRight: '48px' }}>PREMIUM QUALITY STREETWEAR ✦</span>
-              <span style={{ marginRight: '48px' }}>EASY RETURNS & EXCHANGES ✦</span>
+              <span style={{ marginRight: '48px' }}>✦ FREE SHIPPING ON ORDERS ABOVE ₹999 ✦</span>
+              <span style={{ marginRight: '48px' }}>✦ PREMIUM QUALITY STREETWEAR ✦</span>
+              <span style={{ marginRight: '48px' }}>✦ EASY RETURNS & EXCHANGES ✦</span>
             </div>
             <div
               className="whitespace-nowrap flex-shrink-0"
@@ -83,9 +83,9 @@ export default function Header() {
                 animation: 'marquee 20s linear infinite',
               }}
             >
-              <span style={{ marginRight: '48px' }}>FREE SHIPPING ON ORDERS ABOVE ₹999 ✦</span>
-              <span style={{ marginRight: '48px' }}>PREMIUM QUALITY STREETWEAR ✦</span>
-              <span style={{ marginRight: '48px' }}>EASY RETURNS & EXCHANGES ✦</span>
+              <span style={{ marginRight: '48px' }}>✦ FREE SHIPPING ON ORDERS ABOVE ₹999 ✦</span>
+              <span style={{ marginRight: '48px' }}>✦ PREMIUM QUALITY STREETWEAR ✦</span>
+              <span style={{ marginRight: '48px' }}>✦ EASY RETURNS & EXCHANGES ✦</span>
             </div>
           </div>
           <button
